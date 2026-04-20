@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DirectGiving — Give What's Needed</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #C0282B;
+    --red-dark: #8B1A1C;
+    --red-light: #E84545;
+    --orange: #E87722;
+    --cream: #FAF6F0;
+    --white: #FFFFFF;
+    --charcoal: #1A1A1A;
+    --mid: #5A4A42;
+    --light-gray: #F0EAE2;
+    --card-bg: #FFFDF9;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--charcoal);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.1rem 5%;
+    background: rgba(250,246,240,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(192,40,43,0.12);
+  }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: .6rem;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.35rem; color: var(--red-dark); text-decoration: none;
+  }
+  .nav-logo svg { width: 28px; height: 28px; }
+
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { text-decoration: none; font-size: .88rem; font-weight: 500; color: var(--mid); transition: color .2s; }
+  .nav-links a:hover { color: var(--red); }
+
+  .nav-cta {
+    background: var(--red); color: #fff; border: none; cursor: pointer;
+    padding: .55rem 1.4rem; border-radius: 50px; font-family: 'DM Sans', sans-serif;
+    font-size: .88rem; font-weight: 600; text-decoration: none;
+    transition: background .2s, transform .15s;
+  }
+  .nav-cta:hover { background: var(--red-dark); transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr; align-items: center;
+    padding: 6rem 5% 4rem;
+    gap: 4rem;
+    position: relative; overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute; top: -120px; right: -120px;
+    width: 700px; height: 700px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(192,40,43,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: rgba(192,40,43,0.1); color: var(--red);
+    font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+    padding: .4rem 1rem; border-radius: 50px; margin-bottom: 1.4rem;
+  }
+  .hero-badge span { width: 7px; height: 7px; background: var(--red); border-radius: 50%; animation: pulse 1.8s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .4; transform: scale(1.4); }
+  }
+
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.8rem, 5vw, 4.2rem); line-height: 1.08;
+    color: var(--charcoal); margin-bottom: 1.5rem;
+  }
+
+  .hero-title em { font-style: italic; color: var(--red); }
+
+  .hero-subtitle {
+    font-size: 1.08rem; color: var(--mid); line-height: 1.75;
+    max-width: 480px; margin-bottom: 2.2rem;
+  }
+
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem; }
+
+  .btn-primary {
+    background: var(--red); color: #fff;
+    padding: .9rem 2rem; border-radius: 50px; font-weight: 600; font-size: .95rem;
+    text-decoration: none; display: inline-block;
+    transition: background .2s, transform .15s, box-shadow .2s;
+    box-shadow: 0 4px 20px rgba(192,40,43,0.35);
+  }
+  .btn-primary:hover { background: var(--red-dark); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(192,40,43,0.45); }
+
+  .btn-outline {
+    border: 2px solid var(--red); color: var(--red);
+    padding: .88rem 2rem; border-radius: 50px; font-weight: 600; font-size: .95rem;
+    text-decoration: none; display: inline-block;
+    transition: background .2s, color .2s, transform .15s;
+  }
+  .btn-outline:hover { background: var(--red); color: #fff; transform: translateY(-2px); }
+
+  .hero-stat-row {
+    display: flex; gap: 2.5rem;
+  }
+  .hero-stat strong { display: block; font-family: 'DM Serif Display', serif; font-size: 1.7rem; color: var(--red-dark); }
+  .hero-stat span { font-size: .8rem; color: var(--mid); }
+
+  /* Hero visual */
+  .hero-visual {
+    display: flex; justify-content: center; align-items: center;
+    animation: floatCard 5s ease-in-out infinite;
+  }
+  @keyframes floatCard { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+
+  .app-mockup {
+    background: #fff; border-radius: 30px; width: 280px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.16), 0 8px 24px rgba(192,40,43,.12);
+    overflow: hidden; border: 6px solid #fff;
+    position: relative;
+  }
+  .mockup-header {
+    background: var(--red); padding: 1rem 1.2rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .mockup-header-title { color: #fff; font-weight: 700; font-size: .95rem; display: flex; align-items: center; gap: .4rem; }
+  .mockup-header-icon { width: 20px; height: 20px; fill: #fff; }
+
+  .mockup-body { padding: 1rem 1.2rem; }
+  .mockup-greeting { font-weight: 600; font-size: .9rem; color: var(--charcoal); }
+  .mockup-sub { font-size: .72rem; color: var(--mid); margin-bottom: .8rem; }
+  .mockup-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--red); margin-bottom: .6rem; }
+
+  .need-cards { display: flex; gap: .5rem; margin-bottom: .8rem; }
+  .need-card {
+    flex: 1; background: var(--light-gray); border-radius: 10px; padding: .6rem .4rem; text-align: center;
+  }
+  .need-card .icon { font-size: 1.2rem; }
+  .need-card .name { font-size: .6rem; font-weight: 700; color: var(--charcoal); margin-top: .2rem; }
+  .need-card .qty { font-size: .58rem; color: var(--red); }
+
+  .view-more { font-size: .65rem; color: var(--red); font-weight: 600; display: block; text-align: right; margin-bottom: .9rem; }
+
+  .donate-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--red); margin-bottom: .5rem; }
+  .donate-item {
+    display: flex; align-items: center; gap: .4rem; font-size: .72rem; margin-bottom: .3rem;
+  }
+  .chk { width: 14px; height: 14px; background: var(--red); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .chk::after { content: '✓'; color: #fff; font-size: .5rem; }
+
+  .match-btn {
+    width: 100%; background: var(--orange); color: #fff; border: none;
+    border-radius: 10px; padding: .6rem; font-weight: 700; font-size: .78rem;
+    margin-top: .8rem; cursor: default;
+  }
+
+  /* floating badges */
+  .float-badge {
+    position: absolute; background: #fff; border-radius: 12px;
+    padding: .5rem .8rem; box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    display: flex; align-items: center; gap: .5rem; font-size: .72rem;
+    font-weight: 600; white-space: nowrap;
+  }
+  .float-badge.top-left { top: 12%; left: -60px; animation: floatBadge1 4s ease-in-out infinite; }
+  .float-badge.bottom-right { bottom: 14%; right: -50px; animation: floatBadge2 4s ease-in-out infinite; }
+  .float-badge .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  @keyframes floatBadge1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  @keyframes floatBadge2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+
+  .hero-visual-wrap { position: relative; }
+
+  /* ── PROBLEM STRIP ── */
+  .problem-strip {
+    background: var(--red-dark); color: #fff;
+    padding: 3.5rem 5%; text-align: center;
+  }
+  .problem-strip h2 { font-family: 'DM Serif Display', serif; font-size: clamp(1.6rem, 3vw, 2.4rem); margin-bottom: .8rem; }
+  .problem-strip p { font-size: 1rem; opacity: .85; max-width: 620px; margin: 0 auto; line-height: 1.7; }
+  .big-stat { font-family: 'DM Serif Display', serif; font-size: clamp(3rem, 7vw, 6rem); color: var(--orange); display: block; margin: 1rem auto; }
+
+  /* ── SECTION SHARED ── */
+  section { padding: 5rem 5%; }
+  .section-label {
+    font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--red); margin-bottom: .8rem;
+  }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 3.5vw, 2.8rem); line-height: 1.15; margin-bottom: 1rem; }
+  .section-sub { color: var(--mid); line-height: 1.75; max-width: 540px; }
+
+  /* ── HOW IT WORKS ── */
+  .how { background: var(--cream); }
+  .how-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; margin-top: 3.5rem; }
+  .how-card {
+    background: var(--card-bg); border-radius: 20px; padding: 2.2rem 1.8rem;
+    border: 1px solid rgba(192,40,43,0.1);
+    position: relative; overflow: hidden;
+    transition: transform .25s, box-shadow .25s;
+  }
+  .how-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(192,40,43,.12); }
+  .how-card::before {
+    content: attr(data-num);
+    font-family: 'DM Serif Display', serif; font-size: 5rem; font-weight: 700;
+    color: rgba(192,40,43,0.06); position: absolute; top: -10px; right: 12px; line-height: 1;
+  }
+  .how-icon { width: 48px; height: 48px; background: rgba(192,40,43,0.1); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.2rem; }
+  .how-card h3 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; margin-bottom: .6rem; }
+  .how-card p { font-size: .88rem; color: var(--mid); line-height: 1.7; }
+
+  /* ── FEATURES ── */
+  .features { background: var(--charcoal); color: #fff; }
+  .features .section-label { color: var(--orange); }
+  .features .section-title { color: #fff; }
+  .features .section-sub { color: rgba(255,255,255,0.6); }
+  .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3.5rem; }
+  .feat-card {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px; padding: 2rem;
+    transition: background .2s, border-color .2s;
+  }
+  .feat-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(192,40,43,0.5); }
+  .feat-card .icon { font-size: 1.8rem; margin-bottom: 1rem; }
+  .feat-card h3 { font-family: 'DM Serif Display', serif; font-size: 1.15rem; margin-bottom: .5rem; color: #fff; }
+  .feat-card p { font-size: .85rem; color: rgba(255,255,255,0.55); line-height: 1.7; }
+
+  /* ── IMPACT ── */
+  .impact { background: var(--cream); }
+  .impact-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; margin-top: 3rem; }
+  .impact-card {
+    text-align: center; background: var(--card-bg); border-radius: 18px; padding: 2rem 1rem;
+    border: 1px solid rgba(192,40,43,0.1);
+  }
+  .impact-card .num { font-family: 'DM Serif Display', serif; font-size: 2.4rem; color: var(--red-dark); display: block; }
+  .impact-card .label { font-size: .82rem; color: var(--mid); margin-top: .3rem; }
+
+  /* ── WHO ── */
+  .who { background: var(--light-gray); }
+  .who-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; margin-top: 3rem; }
+  .who-card {
+    background: var(--card-bg); border-radius: 18px; padding: 2rem;
+    border-top: 4px solid var(--red);
+  }
+  .who-card .avatar { font-size: 2.2rem; margin-bottom: 1rem; }
+  .who-card h3 { font-family: 'DM Serif Display', serif; font-size: 1.05rem; margin-bottom: .5rem; }
+  .who-card p { font-size: .85rem; color: var(--mid); line-height: 1.7; }
+
+  /* ── CTA SECTION ── */
+  .cta-section {
+    background: linear-gradient(135deg, var(--red-dark) 0%, var(--red) 60%, var(--orange) 100%);
+    color: #fff; text-align: center; padding: 6rem 5%;
+    position: relative; overflow: hidden;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .cta-section h2 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 4vw, 3.2rem); margin-bottom: 1rem; position: relative; }
+  .cta-section p { font-size: 1rem; opacity: .85; max-width: 500px; margin: 0 auto 2.5rem; line-height: 1.75; position: relative; }
+  .cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; position: relative; }
+  .btn-white {
+    background: #fff; color: var(--red);
+    padding: .9rem 2.2rem; border-radius: 50px; font-weight: 700; font-size: .95rem;
+    text-decoration: none; display: inline-block;
+    transition: transform .15s, box-shadow .2s;
+    box-shadow: 0 4px 20px rgba(0,0,0,.2);
+  }
+  .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,.28); }
+  .btn-ghost {
+    border: 2px solid rgba(255,255,255,0.6); color: #fff;
+    padding: .88rem 2.2rem; border-radius: 50px; font-weight: 600; font-size: .95rem;
+    text-decoration: none; display: inline-block;
+    transition: border-color .2s, background .2s;
+  }
+  .btn-ghost:hover { border-color: #fff; background: rgba(255,255,255,0.1); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--charcoal); color: rgba(255,255,255,0.5);
+    padding: 2.5rem 5%; display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem;
+  }
+  .footer-logo { font-family: 'DM Serif Display', serif; color: #fff; font-size: 1.1rem; }
+  .footer-links { display: flex; gap: 1.5rem; }
+  .footer-links a { color: rgba(255,255,255,0.45); text-decoration: none; font-size: .82rem; transition: color .2s; }
+  .footer-links a:hover { color: #fff; }
+  .footer-copy { font-size: .78rem; }
+
+  /* ── SCROLL ANIMATIONS ── */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; text-align: center; padding-top: 7rem; }
+    .hero-subtitle, .section-sub { max-width: 100%; }
+    .hero-stat-row { justify-content: center; }
+    .hero-actions { justify-content: center; }
+    .hero-visual { display: none; }
+    .how-grid { grid-template-columns: 1fr; }
+    .feat-grid { grid-template-columns: 1fr; }
+    .impact-grid { grid-template-columns: repeat(2,1fr); }
+    .who-grid { grid-template-columns: 1fr; }
+    nav .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="20" cy="20" r="20" fill="#C0282B" opacity=".12"/>
+      <path d="M12 26l4-8 4 5 3-4 5 7" stroke="#C0282B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M20 10 C17 14, 12 18, 20 24 C28 18, 23 14, 20 10Z" fill="#C0282B" opacity=".8"/>
+    </svg>
+    DirectGiving
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#who">Who It's For</a></li>
+    <li><a href="#impact">Impact</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Join the Platform →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge"><span></span> AI-Powered Donation Matching</div>
+    <h1 class="hero-title">Give what's <em>truly</em><br>needed. Nothing less.</h1>
+    <p class="hero-subtitle">DirectGiving is the smart platform that connects your donation directly to verified, urgent community needs — eliminating waste and guaranteeing real impact.</p>
+    <div class="hero-actions">
+      <a href="#cta" class="btn-primary">Start Donating Smart →</a>
+      <a href="#how" class="btn-outline">See How It Works</a>
+    </div>
+    <div class="hero-stat-row">
+      <div class="hero-stat"><strong>60%</strong><span>of donations wasted<br>without matching</span></div>
+      <div class="hero-stat"><strong>0%</strong><span>waste with<br>DirectGiving</span></div>
+      <div class="hero-stat"><strong>Real-time</strong><span>live needs<br>registry</span></div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-visual-wrap">
+      <!-- Floating badges -->
+      <div class="float-badge top-left">
+        <div class="dot" style="background:#22C55E"></div>
+        Matched! Baby Formula sent ✓
+      </div>
+      <div class="float-badge bottom-right">
+        <div class="dot" style="background:#E87722"></div>
+        25 packs of Rice needed
+      </div>
+
+      <!-- App Mockup -->
+      <div class="app-mockup">
+        <div class="mockup-header">
+          <div class="mockup-header-title">
+            <svg class="mockup-header-icon" viewBox="0 0 24 24"><path d="M12 2C9.8 5 6 8.5 6 13a6 6 0 0012 0c0-4.5-3.8-8-6-11z"/></svg>
+            DirectGiving
+          </div>
+          <span style="color:rgba(255,255,255,.7);font-size:.75rem;">🔔</span>
+        </div>
+        <div class="mockup-body">
+          <div class="mockup-greeting">Welcome, Anna! 👋</div>
+          <div class="mockup-sub">What is <strong>urgently needed</strong> in your community?</div>
+          <div class="mockup-label">Current Needs</div>
+          <div class="need-cards">
+            <div class="need-card"><div class="icon">🍼</div><div class="name">Baby Formula</div><div class="qty">Need: 15 cans</div></div>
+            <div class="need-card"><div class="icon">💊</div><div class="name">Med Supplies</div><div class="qty">High Priority</div></div>
+            <div class="need-card"><div class="icon">🍚</div><div class="name">Rice Packs</div><div class="qty">Need: 25</div></div>
+          </div>
+          <span class="view-more">VIEW FULL WISHLIST ›</span>
+          <div class="donate-label">Donate Items</div>
+          <div class="donate-item"><div class="chk"></div>Baby Formula</div>
+          <div class="donate-item"><div class="chk"></div>Hygiene Kits</div>
+          <div class="donate-item" style="opacity:.5;"><div style="width:14px;height:14px;border:1.5px solid #ccc;border-radius:4px;flex-shrink:0"></div>Canned Goods</div>
+          <button class="match-btn">MATCH &amp; DONATE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM STRIP -->
+<div class="problem-strip">
+  <p class="section-label" style="color:rgba(255,255,255,0.5);margin-bottom:.5rem;">The Problem</p>
+  <h2>Generosity without guidance<br>creates a second disaster.</h2>
+  <span class="big-stat">60%</span>
+  <p>of unsolicited donations after a crisis are unhelpful — flooding relief centers with clutter while critical needs like medicine, baby formula, and food go unmet.</p>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="reveal">
+    <p class="section-label">How It Works</p>
+    <h2 class="section-title">Precision giving in<br>three simple steps.</h2>
+    <p class="section-sub">Our AI-powered registry makes sure every donation counts — no guesswork, no waste.</p>
+  </div>
+  <div class="how-grid">
+    <div class="how-card reveal" data-num="1">
+      <div class="how-icon">📋</div>
+      <h3>NGOs Post Real Needs</h3>
+      <p>Verified social workers and community leaders log exactly what their families need right now — in real time — through our live wishlist dashboard.</p>
+    </div>
+    <div class="how-card reveal" data-num="2">
+      <div class="how-icon">🤖</div>
+      <h3>AI Matches Your Donation</h3>
+      <p>Our smart matching algorithm pairs your available items directly with the highest-priority, nearest community need — no middleman, no delay.</p>
+    </div>
+    <div class="how-card reveal" data-num="3">
+      <div class="how-icon">📍</div>
+      <h3>You See the Impact</h3>
+      <p>Track your donation on our Dynamic Distribution Map. Know exactly where your gift went and who it helped — full transparency, always.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="reveal">
+    <p class="section-label">Platform Features</p>
+    <h2 class="section-title">Built to eliminate<br>donation waste.</h2>
+    <p class="section-sub">Everything you need to give smart, give local, and give with confidence.</p>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card reveal">
+      <div class="icon">🗺️</div>
+      <h3>Dynamic Distribution Map</h3>
+      <p>A live, hyper-local map showing donation hubs, current needs by area, and real-time fulfillment status across your community.</p>
+    </div>
+    <div class="feat-card reveal">
+      <div class="icon">✅</div>
+      <h3>AI Quality Filter</h3>
+      <p>Our AI-Powered Quality Filter screens donations before they're accepted — preventing the "Second Disaster" of unusable or expired goods reaching relief centers.</p>
+    </div>
+    <div class="feat-card reveal">
+      <div class="icon">📱</div>
+      <h3>Live Wishlist by Social Workers</h3>
+      <p>Verified community leaders manage a real-time registry of exactly what's needed. Donors only see what's genuinely asked for — a "Pull" not "Push" model.</p>
+    </div>
+    <div class="feat-card reveal">
+      <div class="icon">🔒</div>
+      <h3>Verified Recipient Network</h3>
+      <p>Every NGO and community partner is verified through municipal social welfare agencies. Your trust is protected by institutional accountability.</p>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT NUMBERS -->
+<section class="impact" id="impact">
+  <div class="reveal" style="text-align:center;">
+    <p class="section-label">Our Vision</p>
+    <h2 class="section-title">Changing how the<br>Philippines gives.</h2>
+  </div>
+  <div class="impact-grid">
+    <div class="impact-card reveal">
+      <span class="num">₱1.2T</span>
+      <span class="label">Total Philippine charity<br>market we address</span>
+    </div>
+    <div class="impact-card reveal">
+      <span class="num">₱120B</span>
+      <span class="label">Urban digital donation<br>market we serve</span>
+    </div>
+    <div class="impact-card reveal">
+      <span class="num">0%</span>
+      <span class="label">Target donation<br>waste rate</span>
+    </div>
+    <div class="impact-card reveal">
+      <span class="num">Real-time</span>
+      <span class="label">Live needs registry<br>always updated</span>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IT'S FOR -->
+<section class="who" id="who">
+  <div class="reveal">
+    <p class="section-label">Who It's For</p>
+    <h2 class="section-title">One platform.<br>Every stakeholder.</h2>
+  </div>
+  <div class="who-grid">
+    <div class="who-card reveal">
+      <div class="avatar">🤝</div>
+      <h3>Donors & Urban Residents</h3>
+      <p>Give with absolute confidence. Know your donation — whether baby formula, medicine, or rice — reached exactly the family that needed it, verified and tracked.</p>
+    </div>
+    <div class="who-card reveal">
+      <div class="avatar">🏥</div>
+      <h3>NGOs & Non-Profits</h3>
+      <p>Stop managing clutter. Post your exact needs, receive only what you asked for, and eliminate the logistical nightmare of unsolicited and unusable donations.</p>
+    </div>
+    <div class="who-card reveal">
+      <div class="avatar">👩‍💼</div>
+      <h3>Social Workers & Barangay Leaders</h3>
+      <p>Manage your community's wishlist in real time. Reduce burnout from sorting donations and focus your energy on the families who need care most.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="cta">
+  <h2>Ready to make every<br>donation count?</h2>
+  <p>Join DirectGiving and be part of the movement transforming charity from a guessing game into a precise, data-driven act of kindness.</p>
+  <div class="cta-btns">
+    <a href="#" class="btn-white"> I Want to Donate</a>
+    <a href="#" class="btn-ghost"> Register as an NGO</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">DirectGiving</div>
+  <div class="footer-links">
+    <a href="#">About</a>
+    <a href="#">Privacy</a>
+    <a href="#">Contact</a>
+    <a href="#">Partner with Us</a>
+  </div>
+  <div class="footer-copy">© 2026 DirectGiving. All rights reserved.</div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => io.observe(el));
+</script>
+</body>
+</html>
