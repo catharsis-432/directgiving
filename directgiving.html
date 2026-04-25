@@ -4,559 +4,1300 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DirectGiving — Give What's Needed</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --red: #C0282B;
-    --red-dark: #8B1A1C;
-    --red-light: #E84545;
-    --orange: #E87722;
-    --cream: #FAF6F0;
-    --white: #FFFFFF;
-    --charcoal: #1A1A1A;
-    --mid: #5A4A42;
-    --light-gray: #F0EAE2;
-    --card-bg: #FFFDF9;
-  }
+:root {
+  --red:#C0282B; --red-dark:#8B1A1C; --red-light:#E84545;
+  --orange:#E87722; --orange-light:#FFA94D;
+  --cream:#FAF6F0; --white:#FFFFFF;
+  --charcoal:#1A1A1A; --mid:#6B5B52; --muted:#9B8B82;
+  --light:#F0EAE2; --card:#FFFDF9;
+  --green:#22C55E; --green-light:#DCFCE7;
+  --shadow-red:rgba(192,40,43,.18);
+  --r:20px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--charcoal);overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:'DM Sans',sans-serif}
+img{max-width:100%}
+h1,h2,h3,h4{font-family:'DM Serif Display',serif;line-height:1.12}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ══════════════════════════════════════════
+   SCROLLBAR
+══════════════════════════════════════════ */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--cream)}
+::-webkit-scrollbar-thumb{background:var(--red);border-radius:3px}
 
-  html { scroll-behavior: smooth; }
+/* ══════════════════════════════════════════
+   UTILITY
+══════════════════════════════════════════ */
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
+.reveal.in{opacity:1;transform:none}
+.tag{display:inline-flex;align-items:center;gap:.4rem;background:rgba(192,40,43,.1);color:var(--red);
+  font-size:.74rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  padding:.35rem .9rem;border-radius:50px;margin-bottom:1.2rem}
+.tag .dot{width:7px;height:7px;background:var(--red);border-radius:50%;animation:blink 1.8s infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--charcoal);
-    overflow-x: hidden;
-  }
+/* ══════════════════════════════════════════
+   NAV
+══════════════════════════════════════════ */
+#nav{position:fixed;top:0;left:0;right:0;z-index:999;
+  padding:0 5%;height:66px;display:flex;align-items:center;justify-content:space-between;
+  background:rgba(250,246,240,.94);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(192,40,43,.1);transition:box-shadow .3s}
+#nav.scrolled{box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.nav-logo{display:flex;align-items:center;gap:.55rem;font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--red-dark)}
+.nav-logo svg{width:26px;height:26px}
+.nav-links{display:flex;gap:.2rem;list-style:none}
+.nav-links a{padding:.45rem .85rem;border-radius:8px;font-size:.86rem;font-weight:500;color:var(--mid);transition:background .2s,color .2s}
+.nav-links a:hover,.nav-links a.active{background:rgba(192,40,43,.09);color:var(--red)}
+.nav-right{display:flex;gap:.7rem;align-items:center}
+.nav-btn{padding:.5rem 1.2rem;border-radius:50px;font-size:.86rem;font-weight:600;border:none;transition:all .2s}
+.nav-btn.ghost{background:transparent;border:1.5px solid var(--red);color:var(--red)}
+.nav-btn.ghost:hover{background:var(--red);color:#fff}
+.nav-btn.solid{background:var(--red);color:#fff;box-shadow:0 3px 14px var(--shadow-red)}
+.nav-btn.solid:hover{background:var(--red-dark);transform:translateY(-1px)}
+.nav-hamburger{display:none;background:none;border:none;padding:.4rem;flex-direction:column;gap:5px}
+.nav-hamburger span{display:block;width:22px;height:2px;background:var(--charcoal);border-radius:2px;transition:all .3s}
 
-  /* ── NAV ── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1.1rem 5%;
-    background: rgba(250,246,240,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(192,40,43,0.12);
-  }
+/* mobile nav */
+#mobile-menu{display:none;position:fixed;top:66px;left:0;right:0;
+  background:rgba(250,246,240,.98);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(192,40,43,.1);padding:1rem 5% 1.5rem;z-index:998;
+  flex-direction:column;gap:.3rem}
+#mobile-menu a{display:block;padding:.65rem 1rem;border-radius:10px;font-weight:500;color:var(--mid)}
+#mobile-menu a:hover{background:rgba(192,40,43,.08);color:var(--red)}
+#mobile-menu .mobile-btns{display:flex;flex-direction:column;gap:.5rem;margin-top:.8rem}
 
-  .nav-logo {
-    display: flex; align-items: center; gap: .6rem;
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.35rem; color: var(--red-dark); text-decoration: none;
-  }
-  .nav-logo svg { width: 28px; height: 28px; }
+/* ══════════════════════════════════════════
+   HERO
+══════════════════════════════════════════ */
+#hero{min-height:100vh;padding:6rem 5% 4rem;display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;gap:5rem;position:relative;overflow:hidden}
+#hero::before{content:'';position:absolute;top:-200px;right:-200px;
+  width:800px;height:800px;border-radius:50%;
+  background:radial-gradient(circle,rgba(192,40,43,.07) 0%,transparent 70%);pointer-events:none}
+#hero::after{content:'';position:absolute;bottom:-100px;left:-100px;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,119,34,.06) 0%,transparent 70%);pointer-events:none}
+.hero-title{font-size:clamp(2.6rem,5vw,4rem);margin-bottom:1.4rem}
+.hero-title em{font-style:italic;color:var(--red)}
+.hero-sub{font-size:1.05rem;color:var(--mid);line-height:1.8;max-width:480px;margin-bottom:2rem}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2.5rem}
+.btn-red{background:var(--red);color:#fff;padding:.85rem 1.8rem;border-radius:50px;
+  font-weight:600;font-size:.92rem;border:none;
+  box-shadow:0 4px 20px var(--shadow-red);transition:all .2s;display:inline-flex;align-items:center;gap:.5rem}
+.btn-red:hover{background:var(--red-dark);transform:translateY(-2px);box-shadow:0 8px 28px var(--shadow-red)}
+.btn-red-ghost{background:transparent;border:2px solid var(--red);color:var(--red);
+  padding:.83rem 1.8rem;border-radius:50px;font-weight:600;font-size:.92rem;
+  transition:all .2s;display:inline-flex;align-items:center;gap:.5rem}
+.btn-red-ghost:hover{background:var(--red);color:#fff;transform:translateY(-2px)}
+.hero-stats{display:flex;gap:2.5rem;flex-wrap:wrap}
+.h-stat strong{display:block;font-family:'DM Serif Display',serif;font-size:1.9rem;color:var(--red-dark);line-height:1}
+.h-stat span{font-size:.78rem;color:var(--muted);line-height:1.5}
 
-  .nav-links { display: flex; gap: 2rem; list-style: none; }
-  .nav-links a { text-decoration: none; font-size: .88rem; font-weight: 500; color: var(--mid); transition: color .2s; }
-  .nav-links a:hover { color: var(--red); }
+/* phone mockup */
+.hero-visual{display:flex;justify-content:center;align-items:center;position:relative}
+.mockup-wrap{position:relative;animation:float 5s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+.phone{background:#fff;border-radius:36px;width:270px;
+  box-shadow:0 40px 90px rgba(0,0,0,.18),0 10px 30px var(--shadow-red);
+  overflow:hidden;border:7px solid #fff}
+.ph-bar{background:var(--red);padding:1rem 1.1rem;display:flex;align-items:center;justify-content:space-between}
+.ph-brand{color:#fff;font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:.35rem}
+.ph-body{padding:1rem 1.1rem}
+.ph-greet{font-weight:700;font-size:.88rem}
+.ph-sub{font-size:.68rem;color:var(--mid);margin-bottom:.75rem}
+.ph-sec{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--red);margin-bottom:.5rem}
+.need-row{display:flex;gap:.45rem;margin-bottom:.7rem}
+.need-pill{flex:1;background:var(--light);border-radius:10px;padding:.5rem .3rem;text-align:center}
+.need-pill .ni{font-size:1.1rem}
+.need-pill .nn{font-size:.58rem;font-weight:700;color:var(--charcoal);margin-top:.15rem}
+.need-pill .nq{font-size:.55rem;color:var(--red)}
+.ph-more{font-size:.62rem;color:var(--red);font-weight:600;text-align:right;margin-bottom:.8rem}
+.ph-chk-row{display:flex;align-items:center;gap:.4rem;font-size:.7rem;margin-bottom:.3rem}
+.ph-chk{width:13px;height:13px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.ph-chk.on{background:var(--red)}
+.ph-chk.on::after{content:'✓';color:#fff;font-size:.48rem}
+.ph-chk.off{border:1.5px solid #ccc}
+.ph-match{width:100%;background:var(--orange);color:#fff;border:none;border-radius:9px;
+  padding:.55rem;font-weight:700;font-size:.75rem;margin-top:.75rem;
+  cursor:pointer;transition:background .2s}
+.ph-match:hover{background:#c5620d}
+.ph-tabs{display:flex;border-top:1px solid var(--light);padding:.6rem .5rem .3rem}
+.ph-tab{flex:1;text-align:center;font-size:.6rem;color:var(--muted)}
+.ph-tab.active{color:var(--red)}
+.ph-tab .ti{font-size:.95rem;display:block}
+/* badges */
+.fb{position:absolute;background:#fff;border-radius:12px;padding:.45rem .75rem;
+  box-shadow:0 8px 24px rgba(0,0,0,.13);display:flex;align-items:center;gap:.45rem;
+  font-size:.7rem;font-weight:600;white-space:nowrap}
+.fb .fd{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.fb1{top:6%;left:-70px;animation:fb1 4.5s ease-in-out infinite}
+.fb2{bottom:10%;right:-65px;animation:fb2 4s ease-in-out infinite}
+@keyframes fb1{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes fb2{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
 
-  .nav-cta {
-    background: var(--red); color: #fff; border: none; cursor: pointer;
-    padding: .55rem 1.4rem; border-radius: 50px; font-family: 'DM Sans', sans-serif;
-    font-size: .88rem; font-weight: 600; text-decoration: none;
-    transition: background .2s, transform .15s;
-  }
-  .nav-cta:hover { background: var(--red-dark); transform: translateY(-1px); }
+/* ══════════════════════════════════════════
+   TICKER
+══════════════════════════════════════════ */
+.ticker-wrap{background:var(--red-dark);color:#fff;padding:.6rem 0;overflow:hidden}
+.ticker-inner{display:flex;gap:3rem;animation:ticker 28s linear infinite;width:max-content}
+.ticker-inner span{white-space:nowrap;font-size:.8rem;opacity:.85}
+.ticker-inner .sep{color:var(--orange);font-weight:700}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-  /* ── HERO ── */
-  .hero {
-    min-height: 100vh;
-    display: grid; grid-template-columns: 1fr 1fr; align-items: center;
-    padding: 6rem 5% 4rem;
-    gap: 4rem;
-    position: relative; overflow: hidden;
-  }
+/* ══════════════════════════════════════════
+   PROBLEM
+══════════════════════════════════════════ */
+#problem{background:var(--charcoal);color:#fff;padding:5rem 5%;
+  display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.prob-big{font-family:'DM Serif Display',serif;font-size:clamp(5rem,10vw,9rem);
+  color:var(--orange);line-height:1;display:block;margin-bottom:.2rem}
+.prob-label{font-size:.8rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em}
+.prob-title{font-size:clamp(1.8rem,3vw,2.6rem);color:#fff;margin-bottom:1.1rem}
+.prob-body{color:rgba(255,255,255,.65);line-height:1.8;font-size:.95rem}
+.prob-cards{display:flex;flex-direction:column;gap:1rem}
+.prob-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:14px;padding:1.3rem 1.4rem;display:flex;gap:1rem;align-items:flex-start;
+  transition:background .2s}
+.prob-card:hover{background:rgba(255,255,255,.09)}
+.prob-card .ic{font-size:1.5rem;flex-shrink:0}
+.prob-card h4{font-family:'DM Serif Display',serif;font-size:1rem;color:#fff;margin-bottom:.3rem}
+.prob-card p{font-size:.82rem;color:rgba(255,255,255,.55);line-height:1.65}
 
-  .hero::before {
-    content: '';
-    position: absolute; top: -120px; right: -120px;
-    width: 700px; height: 700px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(192,40,43,0.08) 0%, transparent 70%);
-    pointer-events: none;
-  }
+/* ══════════════════════════════════════════
+   HOW
+══════════════════════════════════════════ */
+#how{padding:5.5rem 5%;background:var(--cream)}
+.section-head{text-align:center;max-width:600px;margin:0 auto 3.5rem}
+.section-head .tag{display:inline-flex}
+.section-head h2{font-size:clamp(2rem,4vw,3rem);margin-bottom:.9rem}
+.section-head p{color:var(--mid);line-height:1.8}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;position:relative}
+.steps::before{content:'';position:absolute;top:48px;left:calc(16.66% + 1rem);
+  right:calc(16.66% + 1rem);height:2px;
+  background:repeating-linear-gradient(90deg,var(--red) 0,var(--red) 8px,transparent 8px,transparent 16px)}
+.step{background:var(--card);border-radius:var(--r);padding:2.5rem 2rem;
+  border:1px solid rgba(192,40,43,.1);position:relative;
+  transition:transform .25s,box-shadow .25s}
+.step:hover{transform:translateY(-6px);box-shadow:0 20px 50px var(--shadow-red)}
+.step-num{width:56px;height:56px;border-radius:50%;background:var(--red);color:#fff;
+  font-family:'DM Serif Display',serif;font-size:1.4rem;display:flex;align-items:center;
+  justify-content:center;margin-bottom:1.4rem;position:relative;z-index:1}
+.step h3{font-size:1.15rem;margin-bottom:.6rem}
+.step p{font-size:.86rem;color:var(--mid);line-height:1.7}
+.step-icon{font-size:2rem;margin-bottom:.6rem}
 
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: .5rem;
-    background: rgba(192,40,43,0.1); color: var(--red);
-    font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
-    padding: .4rem 1rem; border-radius: 50px; margin-bottom: 1.4rem;
-  }
-  .hero-badge span { width: 7px; height: 7px; background: var(--red); border-radius: 50%; animation: pulse 1.8s infinite; }
+/* ══════════════════════════════════════════
+   INTERACTIVE DEMO — NEEDS DASHBOARD
+══════════════════════════════════════════ */
+#demo{padding:5.5rem 5%;background:var(--light)}
+.demo-wrap{display:grid;grid-template-columns:1fr 1.4fr;gap:3rem;align-items:start;margin-top:3rem}
+/* Left panel */
+.demo-left h3{font-size:1.6rem;margin-bottom:.8rem}
+.demo-left p{color:var(--mid);line-height:1.75;margin-bottom:1.5rem;font-size:.92rem}
+.role-tabs{display:flex;gap:.5rem;margin-bottom:2rem}
+.rtab{padding:.55rem 1.2rem;border-radius:50px;font-size:.84rem;font-weight:600;
+  border:2px solid transparent;cursor:pointer;transition:all .2s}
+.rtab.active{background:var(--red);color:#fff;border-color:var(--red)}
+.rtab:not(.active){background:transparent;border-color:rgba(192,40,43,.3);color:var(--red)}
+.rtab:not(.active):hover{background:rgba(192,40,43,.08)}
+/* Donor flow steps */
+.flow-steps{display:flex;flex-direction:column;gap:.8rem}
+.fstep{display:flex;gap:1rem;align-items:flex-start;padding:1rem;border-radius:12px;
+  background:#fff;border:1.5px solid transparent;transition:all .3s;cursor:pointer}
+.fstep.active{border-color:var(--red);background:rgba(192,40,43,.04)}
+.fstep-num{width:30px;height:30px;border-radius:50%;background:var(--light);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;
+  flex-shrink:0;color:var(--mid);transition:all .2s}
+.fstep.active .fstep-num{background:var(--red);color:#fff}
+.fstep-text h4{font-size:.9rem;font-weight:600;margin-bottom:.2rem}
+.fstep-text p{font-size:.78rem;color:var(--mid);line-height:1.5}
+/* Right — interactive dashboard */
+.demo-dashboard{background:#fff;border-radius:20px;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.1)}
+.dd-header{background:var(--red);padding:1rem 1.4rem;display:flex;align-items:center;justify-content:space-between}
+.dd-title{color:#fff;font-weight:700;font-size:.95rem}
+.dd-tabs{display:flex;gap:.3rem}
+.dd-tab{background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:6px;
+  padding:.3rem .7rem;font-size:.72rem;font-weight:600;cursor:pointer;transition:background .2s}
+.dd-tab.active{background:rgba(255,255,255,.9);color:var(--red)}
+.dd-tab:not(.active):hover{background:rgba(255,255,255,.35)}
+.dd-body{padding:1.2rem}
+/* Needs list */
+.need-item{display:flex;align-items:center;gap:1rem;padding:.8rem;border-radius:12px;
+  background:var(--light);margin-bottom:.6rem;position:relative;overflow:hidden;transition:background .2s}
+.need-item:hover{background:#e8ddd5}
+.need-icon{font-size:1.4rem;flex-shrink:0;width:40px;text-align:center}
+.need-info{flex:1}
+.need-info h4{font-size:.88rem;font-weight:600;margin-bottom:.15rem}
+.need-info .need-meta{font-size:.72rem;color:var(--mid)}
+.need-bar-wrap{width:80px;flex-shrink:0}
+.need-bar-bg{height:6px;background:rgba(0,0,0,.08);border-radius:3px;overflow:hidden}
+.need-bar-fill{height:100%;border-radius:3px;background:var(--red);transition:width .8s ease}
+.need-pct{font-size:.68rem;color:var(--mid);text-align:right;margin-top:.2rem}
+.need-urgent{position:absolute;top:.5rem;right:.5rem;background:var(--red);color:#fff;
+  font-size:.58rem;font-weight:700;padding:.15rem .4rem;border-radius:4px;text-transform:uppercase}
+/* Donate button in demo */
+.donate-btn{width:100%;background:var(--red);color:#fff;border:none;border-radius:12px;
+  padding:.9rem;font-weight:700;font-size:.92rem;margin-top:1rem;
+  transition:background .2s,transform .15s;display:flex;align-items:center;justify-content:center;gap:.5rem}
+.donate-btn:hover{background:var(--red-dark);transform:translateY(-2px)}
+/* Map tab */
+.mini-map{position:relative;background:linear-gradient(135deg,#e8f5e9 0%,#c8e6c9 100%);
+  border-radius:12px;height:220px;overflow:hidden;margin-bottom:1rem}
+.map-grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(0,0,0,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,0,0,.07) 1px,transparent 1px);
+  background-size:30px 30px}
+.map-pin{position:absolute;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.map-pin .pin-dot{width:20px;height:20px;border-radius:50%;border:3px solid #fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.2);transition:transform .2s}
+.map-pin:hover .pin-dot{transform:scale(1.3)}
+.map-pin .pin-label{font-size:.62rem;font-weight:700;background:#fff;padding:.1rem .3rem;
+  border-radius:4px;margin-top:.2rem;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.map-legend{display:flex;gap:1rem;font-size:.7rem}
+.leg-item{display:flex;align-items:center;gap:.3rem}
+.leg-dot{width:10px;height:10px;border-radius:50%}
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: .4; transform: scale(1.4); }
-  }
+/* ══════════════════════════════════════════
+   DONATION SIMULATOR
+══════════════════════════════════════════ */
+#simulator{padding:5.5rem 5%;background:var(--cream)}
+.sim-wrap{display:grid;grid-template-columns:1.2fr 1fr;gap:3.5rem;align-items:start;margin-top:3rem}
+.sim-card{background:var(--card);border-radius:24px;padding:2.5rem;border:1px solid rgba(192,40,43,.12)}
+.sim-card h3{font-size:1.4rem;margin-bottom:.5rem}
+.sim-card .sim-sub{color:var(--mid);font-size:.88rem;margin-bottom:2rem}
+/* item selector */
+.item-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:1.5rem}
+.item-tile{border:2px solid var(--light);border-radius:14px;padding:1rem .8rem;text-align:center;
+  cursor:pointer;transition:all .2s;background:#fff}
+.item-tile:hover{border-color:var(--orange);background:rgba(232,119,34,.05)}
+.item-tile.selected{border-color:var(--red);background:rgba(192,40,43,.06)}
+.item-tile .it-icon{font-size:1.5rem;margin-bottom:.3rem}
+.item-tile .it-name{font-size:.75rem;font-weight:600;color:var(--charcoal)}
+.item-tile .it-need{font-size:.65rem;color:var(--red);margin-top:.1rem}
+/* qty input */
+.sim-row{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem}
+.sim-row label{font-size:.85rem;font-weight:600;flex-shrink:0;width:100px}
+.qty-input{display:flex;align-items:center;gap:.5rem}
+.qty-btn{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--light);
+  background:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;font-weight:700}
+.qty-btn:hover{border-color:var(--red);color:var(--red)}
+.qty-val{width:45px;text-align:center;font-weight:700;font-size:1rem}
+.sim-submit{width:100%;background:var(--red);color:#fff;border:none;border-radius:14px;
+  padding:1rem;font-weight:700;font-size:1rem;transition:all .2s;margin-top:.5rem}
+.sim-submit:hover{background:var(--red-dark);transform:translateY(-2px);box-shadow:0 6px 24px var(--shadow-red)}
+/* result panel */
+.result-panel{background:var(--card);border-radius:24px;padding:2.5rem;
+  border:1px solid rgba(192,40,43,.12);min-height:300px}
+.result-idle{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.result-idle .ri-icon{font-size:3rem;margin-bottom:1rem}
+.result-idle p{font-size:.9rem;line-height:1.7}
+.result-match{display:none}
+.match-anim{text-align:center;padding:1.5rem 0}
+.match-anim .ma-check{width:70px;height:70px;border-radius:50%;background:var(--green-light);
+  margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:2rem}
+.match-anim h3{font-size:1.3rem;color:var(--green);margin-bottom:.4rem}
+.match-anim p{font-size:.88rem;color:var(--mid);margin-bottom:1.5rem}
+.match-detail{background:var(--light);border-radius:14px;padding:1.2rem 1.4rem}
+.md-row{display:flex;justify-content:space-between;align-items:center;
+  padding:.4rem 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:.84rem}
+.md-row:last-child{border-bottom:none}
+.md-row span:first-child{color:var(--mid)}
+.md-row strong{color:var(--charcoal)}
+.impact-bar-wrap{margin-top:1.2rem}
+.impact-bar-label{display:flex;justify-content:space-between;font-size:.76rem;margin-bottom:.4rem}
+.impact-bar-label span:first-child{color:var(--mid)}
+.impact-bar-label strong{color:var(--red)}
+.impact-bar-bg{height:10px;background:var(--light);border-radius:5px;overflow:hidden}
+.impact-bar-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--orange));
+  border-radius:5px;width:0;transition:width 1.2s ease}
 
-  .hero-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(2.8rem, 5vw, 4.2rem); line-height: 1.08;
-    color: var(--charcoal); margin-bottom: 1.5rem;
-  }
+/* ══════════════════════════════════════════
+   FEATURES GRID
+══════════════════════════════════════════ */
+#features{padding:5.5rem 5%;background:var(--charcoal);color:#fff}
+#features .tag{background:rgba(232,119,34,.2);color:var(--orange-light)}
+#features .section-head h2{color:#fff}
+#features .section-head p{color:rgba(255,255,255,.55)}
+.feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.4rem;margin-top:3.5rem}
+.feat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+  border-radius:18px;padding:2rem;transition:all .25s}
+.feat:hover{background:rgba(255,255,255,.08);border-color:rgba(192,40,43,.5);transform:translateY(-4px)}
+.feat-ic{font-size:1.8rem;margin-bottom:1rem}
+.feat h3{color:#fff;font-size:1.1rem;margin-bottom:.5rem}
+.feat p{font-size:.84rem;color:rgba(255,255,255,.5);line-height:1.7}
 
-  .hero-title em { font-style: italic; color: var(--red); }
+/* ══════════════════════════════════════════
+   WHO
+══════════════════════════════════════════ */
+#who{padding:5.5rem 5%;background:var(--cream)}
+.who-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:3.5rem}
+.who-card{background:var(--card);border-radius:20px;padding:2.2rem;
+  border-top:5px solid var(--red);transition:transform .25s,box-shadow .25s}
+.who-card:hover{transform:translateY(-6px);box-shadow:0 20px 50px var(--shadow-red)}
+.who-avatar{font-size:2.5rem;margin-bottom:1.1rem}
+.who-card h3{font-size:1.1rem;margin-bottom:.6rem}
+.who-card p{font-size:.85rem;color:var(--mid);line-height:1.75}
+.who-card ul{margin-top:.9rem;padding-left:1rem}
+.who-card li{font-size:.82rem;color:var(--mid);line-height:1.8}
+.who-card li::marker{color:var(--red)}
 
-  .hero-subtitle {
-    font-size: 1.08rem; color: var(--mid); line-height: 1.75;
-    max-width: 480px; margin-bottom: 2.2rem;
-  }
+/* ══════════════════════════════════════════
+   IMPACT NUMBERS
+══════════════════════════════════════════ */
+#impact{background:var(--red-dark);color:#fff;padding:5rem 5%;text-align:center}
+#impact h2{font-size:clamp(2rem,4vw,3rem);margin-bottom:.8rem}
+#impact p{color:rgba(255,255,255,.7);max-width:500px;margin:0 auto 3rem}
+.impact-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem}
+.imp-num{font-family:'DM Serif Display',serif;font-size:clamp(2rem,4vw,3.2rem);
+  color:var(--orange);display:block;margin-bottom:.4rem}
+.imp-label{font-size:.82rem;color:rgba(255,255,255,.6);line-height:1.5}
 
-  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem; }
+/* ══════════════════════════════════════════
+   MODAL (Sign-up)
+══════════════════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;
+  display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:24px;width:100%;max-width:480px;overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,.25);animation:modalIn .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes modalIn{from{opacity:0;transform:scale(.85) translateY(20px)}to{opacity:1;transform:none}}
+.modal-head{background:linear-gradient(135deg,var(--red-dark),var(--red));
+  padding:2rem 2rem 1.5rem;color:#fff;position:relative}
+.modal-head h3{font-size:1.5rem;margin-bottom:.3rem}
+.modal-head p{font-size:.85rem;opacity:.8}
+.modal-close{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.2);
+  border:none;width:32px;height:32px;border-radius:50%;color:#fff;font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s}
+.modal-close:hover{background:rgba(255,255,255,.35)}
+.modal-body{padding:2rem}
+.role-choice{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.5rem}
+.role-opt{border:2px solid var(--light);border-radius:14px;padding:1.1rem;text-align:center;
+  cursor:pointer;transition:all .2s}
+.role-opt:hover{border-color:var(--orange)}
+.role-opt.selected{border-color:var(--red);background:rgba(192,40,43,.05)}
+.role-opt .ro-ic{font-size:1.8rem;margin-bottom:.4rem}
+.role-opt .ro-label{font-size:.82rem;font-weight:600}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:.82rem;font-weight:600;margin-bottom:.4rem;color:var(--charcoal)}
+.form-group input,.form-group select{width:100%;padding:.7rem 1rem;border:1.5px solid var(--light);
+  border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.88rem;
+  transition:border-color .2s;outline:none}
+.form-group input:focus,.form-group select:focus{border-color:var(--red)}
+.form-group.two{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.form-submit{width:100%;background:var(--red);color:#fff;border:none;border-radius:12px;
+  padding:.9rem;font-weight:700;font-size:.95rem;margin-top:.5rem;transition:all .2s}
+.form-submit:hover{background:var(--red-dark)}
+.form-success{text-align:center;padding:2rem 0;display:none}
+.form-success .fs-ic{font-size:3rem;margin-bottom:1rem}
+.form-success h4{font-size:1.3rem;margin-bottom:.5rem}
+.form-success p{font-size:.88rem;color:var(--mid)}
 
-  .btn-primary {
-    background: var(--red); color: #fff;
-    padding: .9rem 2rem; border-radius: 50px; font-weight: 600; font-size: .95rem;
-    text-decoration: none; display: inline-block;
-    transition: background .2s, transform .15s, box-shadow .2s;
-    box-shadow: 0 4px 20px rgba(192,40,43,0.35);
-  }
-  .btn-primary:hover { background: var(--red-dark); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(192,40,43,0.45); }
+/* ══════════════════════════════════════════
+   CTA SECTION
+══════════════════════════════════════════ */
+#cta{background:linear-gradient(135deg,var(--red-dark) 0%,var(--red) 55%,var(--orange) 100%);
+  color:#fff;padding:6rem 5%;text-align:center;position:relative;overflow:hidden}
+#cta::before{content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle at 20% 50%,rgba(255,255,255,.06) 0%,transparent 50%),
+    radial-gradient(circle at 80% 50%,rgba(255,255,255,.06) 0%,transparent 50%)}
+#cta h2{font-size:clamp(2rem,4vw,3.2rem);margin-bottom:1rem;position:relative}
+#cta p{font-size:1rem;opacity:.85;max-width:520px;margin:0 auto 2.5rem;line-height:1.8;position:relative}
+.cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;position:relative}
+.btn-white{background:#fff;color:var(--red);padding:.88rem 2rem;border-radius:50px;
+  font-weight:700;font-size:.92rem;transition:all .2s;
+  box-shadow:0 4px 20px rgba(0,0,0,.2);border:none}
+.btn-white:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.28)}
+.btn-outline-w{border:2px solid rgba(255,255,255,.6);color:#fff;padding:.86rem 2rem;
+  border-radius:50px;font-weight:600;font-size:.92rem;background:transparent;transition:all .2s}
+.btn-outline-w:hover{border-color:#fff;background:rgba(255,255,255,.12)}
 
-  .btn-outline {
-    border: 2px solid var(--red); color: var(--red);
-    padding: .88rem 2rem; border-radius: 50px; font-weight: 600; font-size: .95rem;
-    text-decoration: none; display: inline-block;
-    transition: background .2s, color .2s, transform .15s;
-  }
-  .btn-outline:hover { background: var(--red); color: #fff; transform: translateY(-2px); }
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+footer{background:var(--charcoal);color:rgba(255,255,255,.45);padding:3rem 5% 2rem}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:2.5rem}
+.footer-brand h4{font-family:'DM Serif Display',serif;color:#fff;font-size:1.2rem;margin-bottom:.5rem}
+.footer-brand p{font-size:.82rem;line-height:1.7;max-width:260px}
+.footer-col h5{color:rgba(255,255,255,.8);font-size:.84rem;font-weight:700;
+  margin-bottom:1rem;text-transform:uppercase;letter-spacing:.06em}
+.footer-col a{display:block;color:rgba(255,255,255,.45);font-size:.82rem;
+  margin-bottom:.5rem;transition:color .2s}
+.footer-col a:hover{color:#fff}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:1.5rem;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.78rem}
 
-  .hero-stat-row {
-    display: flex; gap: 2.5rem;
-  }
-  .hero-stat strong { display: block; font-family: 'DM Serif Display', serif; font-size: 1.7rem; color: var(--red-dark); }
-  .hero-stat span { font-size: .8rem; color: var(--mid); }
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+#toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--charcoal);color:#fff;padding:.8rem 1.5rem;border-radius:50px;
+  font-size:.84rem;font-weight:600;z-index:3000;transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  display:flex;align-items:center;gap:.5rem;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast .t-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
 
-  /* Hero visual */
-  .hero-visual {
-    display: flex; justify-content: center; align-items: center;
-    animation: floatCard 5s ease-in-out infinite;
-  }
-  @keyframes floatCard { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+/* ══════════════════════════════════════════
+   SCROLL TO TOP
+══════════════════════════════════════════ */
+#scroll-top{position:fixed;bottom:2rem;right:2rem;width:44px;height:44px;border-radius:50%;
+  background:var(--red);color:#fff;border:none;font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px var(--shadow-red);cursor:pointer;
+  opacity:0;transform:translateY(10px);transition:all .3s;z-index:500}
+#scroll-top.visible{opacity:1;transform:translateY(0)}
+#scroll-top:hover{background:var(--red-dark);transform:translateY(-2px)}
 
-  .app-mockup {
-    background: #fff; border-radius: 30px; width: 280px;
-    box-shadow: 0 30px 80px rgba(0,0,0,.16), 0 8px 24px rgba(192,40,43,.12);
-    overflow: hidden; border: 6px solid #fff;
-    position: relative;
-  }
-  .mockup-header {
-    background: var(--red); padding: 1rem 1.2rem;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .mockup-header-title { color: #fff; font-weight: 700; font-size: .95rem; display: flex; align-items: center; gap: .4rem; }
-  .mockup-header-icon { width: 20px; height: 20px; fill: #fff; }
-
-  .mockup-body { padding: 1rem 1.2rem; }
-  .mockup-greeting { font-weight: 600; font-size: .9rem; color: var(--charcoal); }
-  .mockup-sub { font-size: .72rem; color: var(--mid); margin-bottom: .8rem; }
-  .mockup-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--red); margin-bottom: .6rem; }
-
-  .need-cards { display: flex; gap: .5rem; margin-bottom: .8rem; }
-  .need-card {
-    flex: 1; background: var(--light-gray); border-radius: 10px; padding: .6rem .4rem; text-align: center;
-  }
-  .need-card .icon { font-size: 1.2rem; }
-  .need-card .name { font-size: .6rem; font-weight: 700; color: var(--charcoal); margin-top: .2rem; }
-  .need-card .qty { font-size: .58rem; color: var(--red); }
-
-  .view-more { font-size: .65rem; color: var(--red); font-weight: 600; display: block; text-align: right; margin-bottom: .9rem; }
-
-  .donate-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--red); margin-bottom: .5rem; }
-  .donate-item {
-    display: flex; align-items: center; gap: .4rem; font-size: .72rem; margin-bottom: .3rem;
-  }
-  .chk { width: 14px; height: 14px; background: var(--red); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .chk::after { content: '✓'; color: #fff; font-size: .5rem; }
-
-  .match-btn {
-    width: 100%; background: var(--orange); color: #fff; border: none;
-    border-radius: 10px; padding: .6rem; font-weight: 700; font-size: .78rem;
-    margin-top: .8rem; cursor: default;
-  }
-
-  /* floating badges */
-  .float-badge {
-    position: absolute; background: #fff; border-radius: 12px;
-    padding: .5rem .8rem; box-shadow: 0 8px 24px rgba(0,0,0,.12);
-    display: flex; align-items: center; gap: .5rem; font-size: .72rem;
-    font-weight: 600; white-space: nowrap;
-  }
-  .float-badge.top-left { top: 12%; left: -60px; animation: floatBadge1 4s ease-in-out infinite; }
-  .float-badge.bottom-right { bottom: 14%; right: -50px; animation: floatBadge2 4s ease-in-out infinite; }
-  .float-badge .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-
-  @keyframes floatBadge1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-  @keyframes floatBadge2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
-
-  .hero-visual-wrap { position: relative; }
-
-  /* ── PROBLEM STRIP ── */
-  .problem-strip {
-    background: var(--red-dark); color: #fff;
-    padding: 3.5rem 5%; text-align: center;
-  }
-  .problem-strip h2 { font-family: 'DM Serif Display', serif; font-size: clamp(1.6rem, 3vw, 2.4rem); margin-bottom: .8rem; }
-  .problem-strip p { font-size: 1rem; opacity: .85; max-width: 620px; margin: 0 auto; line-height: 1.7; }
-  .big-stat { font-family: 'DM Serif Display', serif; font-size: clamp(3rem, 7vw, 6rem); color: var(--orange); display: block; margin: 1rem auto; }
-
-  /* ── SECTION SHARED ── */
-  section { padding: 5rem 5%; }
-  .section-label {
-    font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em;
-    color: var(--red); margin-bottom: .8rem;
-  }
-  .section-title { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 3.5vw, 2.8rem); line-height: 1.15; margin-bottom: 1rem; }
-  .section-sub { color: var(--mid); line-height: 1.75; max-width: 540px; }
-
-  /* ── HOW IT WORKS ── */
-  .how { background: var(--cream); }
-  .how-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; margin-top: 3.5rem; }
-  .how-card {
-    background: var(--card-bg); border-radius: 20px; padding: 2.2rem 1.8rem;
-    border: 1px solid rgba(192,40,43,0.1);
-    position: relative; overflow: hidden;
-    transition: transform .25s, box-shadow .25s;
-  }
-  .how-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(192,40,43,.12); }
-  .how-card::before {
-    content: attr(data-num);
-    font-family: 'DM Serif Display', serif; font-size: 5rem; font-weight: 700;
-    color: rgba(192,40,43,0.06); position: absolute; top: -10px; right: 12px; line-height: 1;
-  }
-  .how-icon { width: 48px; height: 48px; background: rgba(192,40,43,0.1); border-radius: 12px;
-    display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.2rem; }
-  .how-card h3 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; margin-bottom: .6rem; }
-  .how-card p { font-size: .88rem; color: var(--mid); line-height: 1.7; }
-
-  /* ── FEATURES ── */
-  .features { background: var(--charcoal); color: #fff; }
-  .features .section-label { color: var(--orange); }
-  .features .section-title { color: #fff; }
-  .features .section-sub { color: rgba(255,255,255,0.6); }
-  .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3.5rem; }
-  .feat-card {
-    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 18px; padding: 2rem;
-    transition: background .2s, border-color .2s;
-  }
-  .feat-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(192,40,43,0.5); }
-  .feat-card .icon { font-size: 1.8rem; margin-bottom: 1rem; }
-  .feat-card h3 { font-family: 'DM Serif Display', serif; font-size: 1.15rem; margin-bottom: .5rem; color: #fff; }
-  .feat-card p { font-size: .85rem; color: rgba(255,255,255,0.55); line-height: 1.7; }
-
-  /* ── IMPACT ── */
-  .impact { background: var(--cream); }
-  .impact-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; margin-top: 3rem; }
-  .impact-card {
-    text-align: center; background: var(--card-bg); border-radius: 18px; padding: 2rem 1rem;
-    border: 1px solid rgba(192,40,43,0.1);
-  }
-  .impact-card .num { font-family: 'DM Serif Display', serif; font-size: 2.4rem; color: var(--red-dark); display: block; }
-  .impact-card .label { font-size: .82rem; color: var(--mid); margin-top: .3rem; }
-
-  /* ── WHO ── */
-  .who { background: var(--light-gray); }
-  .who-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; margin-top: 3rem; }
-  .who-card {
-    background: var(--card-bg); border-radius: 18px; padding: 2rem;
-    border-top: 4px solid var(--red);
-  }
-  .who-card .avatar { font-size: 2.2rem; margin-bottom: 1rem; }
-  .who-card h3 { font-family: 'DM Serif Display', serif; font-size: 1.05rem; margin-bottom: .5rem; }
-  .who-card p { font-size: .85rem; color: var(--mid); line-height: 1.7; }
-
-  /* ── CTA SECTION ── */
-  .cta-section {
-    background: linear-gradient(135deg, var(--red-dark) 0%, var(--red) 60%, var(--orange) 100%);
-    color: #fff; text-align: center; padding: 6rem 5%;
-    position: relative; overflow: hidden;
-  }
-  .cta-section::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  }
-  .cta-section h2 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 4vw, 3.2rem); margin-bottom: 1rem; position: relative; }
-  .cta-section p { font-size: 1rem; opacity: .85; max-width: 500px; margin: 0 auto 2.5rem; line-height: 1.75; position: relative; }
-  .cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; position: relative; }
-  .btn-white {
-    background: #fff; color: var(--red);
-    padding: .9rem 2.2rem; border-radius: 50px; font-weight: 700; font-size: .95rem;
-    text-decoration: none; display: inline-block;
-    transition: transform .15s, box-shadow .2s;
-    box-shadow: 0 4px 20px rgba(0,0,0,.2);
-  }
-  .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,.28); }
-  .btn-ghost {
-    border: 2px solid rgba(255,255,255,0.6); color: #fff;
-    padding: .88rem 2.2rem; border-radius: 50px; font-weight: 600; font-size: .95rem;
-    text-decoration: none; display: inline-block;
-    transition: border-color .2s, background .2s;
-  }
-  .btn-ghost:hover { border-color: #fff; background: rgba(255,255,255,0.1); }
-
-  /* ── FOOTER ── */
-  footer {
-    background: var(--charcoal); color: rgba(255,255,255,0.5);
-    padding: 2.5rem 5%; display: flex; align-items: center; justify-content: space-between;
-    flex-wrap: wrap; gap: 1rem;
-  }
-  .footer-logo { font-family: 'DM Serif Display', serif; color: #fff; font-size: 1.1rem; }
-  .footer-links { display: flex; gap: 1.5rem; }
-  .footer-links a { color: rgba(255,255,255,0.45); text-decoration: none; font-size: .82rem; transition: color .2s; }
-  .footer-links a:hover { color: #fff; }
-  .footer-copy { font-size: .78rem; }
-
-  /* ── SCROLL ANIMATIONS ── */
-  .reveal { opacity: 0; transform: translateY(30px); transition: opacity .6s ease, transform .6s ease; }
-  .reveal.visible { opacity: 1; transform: none; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 900px) {
-    .hero { grid-template-columns: 1fr; text-align: center; padding-top: 7rem; }
-    .hero-subtitle, .section-sub { max-width: 100%; }
-    .hero-stat-row { justify-content: center; }
-    .hero-actions { justify-content: center; }
-    .hero-visual { display: none; }
-    .how-grid { grid-template-columns: 1fr; }
-    .feat-grid { grid-template-columns: 1fr; }
-    .impact-grid { grid-template-columns: repeat(2,1fr); }
-    .who-grid { grid-template-columns: 1fr; }
-    nav .nav-links { display: none; }
-  }
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media(max-width:1000px){
+  #hero{grid-template-columns:1fr;text-align:center;padding-top:7rem;gap:3rem}
+  .hero-sub{max-width:100%}
+  .hero-stats,.hero-actions{justify-content:center}
+  .hero-visual{order:-1}
+  .phone{width:230px}
+  .fb1,.fb2{display:none}
+  #problem{grid-template-columns:1fr}
+  .demo-wrap{grid-template-columns:1fr}
+  .sim-wrap{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr}
+  .steps::before{display:none}
+  .feat-grid{grid-template-columns:1fr}
+  .who-grid{grid-template-columns:1fr}
+  .impact-row{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .nav-links,.nav-btn.ghost{display:none}
+  .nav-hamburger{display:flex}
+}
+@media(max-width:540px){
+  .item-grid{grid-template-columns:repeat(2,1fr)}
+  .impact-row{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr}
+  .role-choice{grid-template-columns:1fr 1fr}
+  .form-group.two{grid-template-columns:1fr}
+  .hero-stats{flex-direction:column;align-items:center}
+  #hero{padding:6rem 5% 3rem}
+}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <a class="nav-logo" href="#">
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="20" cy="20" r="20" fill="#C0282B" opacity=".12"/>
-      <path d="M12 26l4-8 4 5 3-4 5 7" stroke="#C0282B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M20 10 C17 14, 12 18, 20 24 C28 18, 23 14, 20 10Z" fill="#C0282B" opacity=".8"/>
+<!-- ══════ NAV ══════ -->
+<nav id="nav">
+  <a class="nav-logo" href="#hero">
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#C0282B" fill-opacity=".15"/>
+      <path d="M16 6C13 10 8 14 8 19a8 8 0 0016 0c0-5-5-9-8-13z" fill="#C0282B" opacity=".85"/>
+      <path d="M11 22l3-6 3 4 2-3 3 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     DirectGiving
   </a>
   <ul class="nav-links">
     <li><a href="#how">How It Works</a></li>
+    <li><a href="#demo">Live Demo</a></li>
+    <li><a href="#simulator">Try It</a></li>
     <li><a href="#features">Features</a></li>
     <li><a href="#who">Who It's For</a></li>
-    <li><a href="#impact">Impact</a></li>
   </ul>
-  <a href="#cta" class="nav-cta">Join the Platform →</a>
+  <div class="nav-right">
+    <button class="nav-btn ghost" onclick="openModal('donor')">Log In</button>
+    <button class="nav-btn solid" onclick="openModal('donor')">Get Started →</button>
+  </div>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-content">
-    <div class="hero-badge"><span></span> AI-Powered Donation Matching</div>
-    <h1 class="hero-title">Give what's <em>truly</em><br>needed. Nothing less.</h1>
-    <p class="hero-subtitle">DirectGiving is the smart platform that connects your donation directly to verified, urgent community needs — eliminating waste and guaranteeing real impact.</p>
-    <div class="hero-actions">
-      <a href="#cta" class="btn-primary">Start Donating Smart →</a>
-      <a href="#how" class="btn-outline">See How It Works</a>
-    </div>
-    <div class="hero-stat-row">
-      <div class="hero-stat"><strong>60%</strong><span>of donations wasted<br>without matching</span></div>
-      <div class="hero-stat"><strong>0%</strong><span>waste with<br>DirectGiving</span></div>
-      <div class="hero-stat"><strong>Real-time</strong><span>live needs<br>registry</span></div>
-    </div>
+<!-- mobile menu -->
+<div id="mobile-menu">
+  <a href="#how" onclick="closeMobile()">How It Works</a>
+  <a href="#demo" onclick="closeMobile()">Live Demo</a>
+  <a href="#simulator" onclick="closeMobile()">Try It</a>
+  <a href="#features" onclick="closeMobile()">Features</a>
+  <a href="#who" onclick="closeMobile()">Who It's For</a>
+  <div class="mobile-btns">
+    <button class="btn-red-ghost" onclick="openModal('donor');closeMobile()">Log In</button>
+    <button class="btn-red" onclick="openModal('donor');closeMobile()">Get Started →</button>
   </div>
-
-  <div class="hero-visual">
-    <div class="hero-visual-wrap">
-      <!-- Floating badges -->
-      <div class="float-badge top-left">
-        <div class="dot" style="background:#22C55E"></div>
-        Matched! Baby Formula sent ✓
-      </div>
-      <div class="float-badge bottom-right">
-        <div class="dot" style="background:#E87722"></div>
-        25 packs of Rice needed
-      </div>
-
-      <!-- App Mockup -->
-      <div class="app-mockup">
-        <div class="mockup-header">
-          <div class="mockup-header-title">
-            <svg class="mockup-header-icon" viewBox="0 0 24 24"><path d="M12 2C9.8 5 6 8.5 6 13a6 6 0 0012 0c0-4.5-3.8-8-6-11z"/></svg>
-            DirectGiving
-          </div>
-          <span style="color:rgba(255,255,255,.7);font-size:.75rem;">🔔</span>
-        </div>
-        <div class="mockup-body">
-          <div class="mockup-greeting">Welcome, Anna! 👋</div>
-          <div class="mockup-sub">What is <strong>urgently needed</strong> in your community?</div>
-          <div class="mockup-label">Current Needs</div>
-          <div class="need-cards">
-            <div class="need-card"><div class="icon">🍼</div><div class="name">Baby Formula</div><div class="qty">Need: 15 cans</div></div>
-            <div class="need-card"><div class="icon">💊</div><div class="name">Med Supplies</div><div class="qty">High Priority</div></div>
-            <div class="need-card"><div class="icon">🍚</div><div class="name">Rice Packs</div><div class="qty">Need: 25</div></div>
-          </div>
-          <span class="view-more">VIEW FULL WISHLIST ›</span>
-          <div class="donate-label">Donate Items</div>
-          <div class="donate-item"><div class="chk"></div>Baby Formula</div>
-          <div class="donate-item"><div class="chk"></div>Hygiene Kits</div>
-          <div class="donate-item" style="opacity:.5;"><div style="width:14px;height:14px;border:1.5px solid #ccc;border-radius:4px;flex-shrink:0"></div>Canned Goods</div>
-          <button class="match-btn">MATCH &amp; DONATE</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PROBLEM STRIP -->
-<div class="problem-strip">
-  <p class="section-label" style="color:rgba(255,255,255,0.5);margin-bottom:.5rem;">The Problem</p>
-  <h2>Generosity without guidance<br>creates a second disaster.</h2>
-  <span class="big-stat">60%</span>
-  <p>of unsolicited donations after a crisis are unhelpful — flooding relief centers with clutter while critical needs like medicine, baby formula, and food go unmet.</p>
 </div>
 
-<!-- HOW IT WORKS -->
-<section class="how" id="how">
-  <div class="reveal">
-    <p class="section-label">How It Works</p>
-    <h2 class="section-title">Precision giving in<br>three simple steps.</h2>
-    <p class="section-sub">Our AI-powered registry makes sure every donation counts — no guesswork, no waste.</p>
+<!-- ══════ HERO ══════ -->
+<section id="hero">
+  <div class="hero-content">
+    <div class="tag"><span class="dot"></span> AI-Powered Donation Matching · Philippines</div>
+    <h1 class="hero-title">Give what's <em>truly</em><br>needed. Nothing less.</h1>
+    <p class="hero-sub">DirectGiving bridges donors and communities through a real-time AI registry — ensuring every donation reaches exactly the right hands, eliminating waste and rebuilding trust in charity.</p>
+    <div class="hero-actions">
+      <button class="btn-red" onclick="openModal('donor')"> Start Donating Smart</button>
+      <a href="#demo" class="btn-red-ghost">See Live Demo ↓</a>
+    </div>
+    <div class="hero-stats">
+      <div class="h-stat"><strong>60%</strong><span>of donations wasted<br>without matching</span></div>
+      <div class="h-stat"><strong>0%</strong><span>target waste rate<br>with DirectGiving</span></div>
+      <div class="h-stat"><strong>Real-time</strong><span>live community<br>needs registry</span></div>
+    </div>
   </div>
-  <div class="how-grid">
-    <div class="how-card reveal" data-num="1">
-      <div class="how-icon">📋</div>
-      <h3>NGOs Post Real Needs</h3>
-      <p>Verified social workers and community leaders log exactly what their families need right now — in real time — through our live wishlist dashboard.</p>
-    </div>
-    <div class="how-card reveal" data-num="2">
-      <div class="how-icon">🤖</div>
-      <h3>AI Matches Your Donation</h3>
-      <p>Our smart matching algorithm pairs your available items directly with the highest-priority, nearest community need — no middleman, no delay.</p>
-    </div>
-    <div class="how-card reveal" data-num="3">
-      <div class="how-icon">📍</div>
-      <h3>You See the Impact</h3>
-      <p>Track your donation on our Dynamic Distribution Map. Know exactly where your gift went and who it helped — full transparency, always.</p>
+  <div class="hero-visual">
+    <div class="mockup-wrap">
+      <div class="fb fb1"><div class="fd" style="background:#22C55E"></div>✓ Match found — Baby Formula sent!</div>
+      <div class="fb fb2"><div class="fd" style="background:#E87722"></div>⚠ 25 Rice packs still needed</div>
+      <div class="phone">
+        <div class="ph-bar">
+          <div class="ph-brand">💙 DirectGiving</div>
+          <span style="color:rgba(255,255,255,.7);font-size:.8rem">🔔</span>
+        </div>
+        <div class="ph-body">
+          <div class="ph-greet">Welcome, Anna! 👋</div>
+          <div class="ph-sub">What is <strong>urgently needed</strong> in your community?</div>
+          <div class="ph-sec">Current Needs</div>
+          <div class="need-row">
+            <div class="need-pill"><div class="ni">🍼</div><div class="nn">Baby Formula</div><div class="nq">Need: 15 cans</div></div>
+            <div class="need-pill"><div class="ni">💊</div><div class="nn">Med Supplies</div><div class="nq">High Priority</div></div>
+            <div class="need-pill"><div class="ni">🍚</div><div class="nn">Rice Packs</div><div class="nq">Need: 25</div></div>
+          </div>
+          <span class="ph-more">VIEW FULL WISHLIST ›</span>
+          <div class="ph-sec">Donate Items</div>
+          <div class="ph-chk-row"><div class="ph-chk on"></div> Baby Formula</div>
+          <div class="ph-chk-row"><div class="ph-chk on"></div> Hygiene Kits</div>
+          <div class="ph-chk-row"><div class="ph-chk off"></div> <span style="opacity:.5">Canned Goods</span></div>
+          <button class="ph-match">MATCH &amp; DONATE</button>
+        </div>
+        <div class="ph-tabs">
+          <div class="ph-tab active"><span class="ti">🏠</span>Home</div>
+          <div class="ph-tab"><span class="ti">📋</span>Wishlist</div>
+          <div class="ph-tab"><span class="ti">🗺️</span>Map</div>
+          <div class="ph-tab"><span class="ti">👤</span>Profile</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- FEATURES -->
-<section class="features" id="features">
+<!-- ══════ TICKER ══════ -->
+<div class="ticker-wrap" aria-hidden="true">
+  <div class="ticker-inner" id="ticker">
+    <span>🍼 15 cans Baby Formula needed — Tondo, Manila</span><span class="sep">✦</span>
+    <span>💊 Medical kits — High Priority — Cebu City</span><span class="sep">✦</span>
+    <span>🍚 25 Rice packs — Davao del Sur</span><span class="sep">✦</span>
+    <span>🧴 Hygiene kits — 30 sets — Caloocan</span><span class="sep">✦</span>
+    <span>🧸 Children's clothing — Quezon City</span><span class="sep">✦</span>
+    <span>💉 Insulin — Urgent — Pasig City</span><span class="sep">✦</span>
+    <span>🍼 15 cans Baby Formula needed — Tondo, Manila</span><span class="sep">✦</span>
+    <span>💊 Medical kits — High Priority — Cebu City</span><span class="sep">✦</span>
+    <span>🍚 25 Rice packs — Davao del Sur</span><span class="sep">✦</span>
+    <span>🧴 Hygiene kits — 30 sets — Caloocan</span><span class="sep">✦</span>
+    <span>🧸 Children's clothing — Quezon City</span><span class="sep">✦</span>
+    <span>💉 Insulin — Urgent — Pasig City</span><span class="sep">✦</span>
+  </div>
+</div>
+
+<!-- ══════ PROBLEM ══════ -->
+<section id="problem">
   <div class="reveal">
-    <p class="section-label">Platform Features</p>
-    <h2 class="section-title">Built to eliminate<br>donation waste.</h2>
-    <p class="section-sub">Everything you need to give smart, give local, and give with confidence.</p>
+    <p class="prob-label">The Core Problem</p>
+    <span class="prob-big">60%</span>
+    <p style="color:rgba(255,255,255,.45);font-size:.78rem;margin-bottom:.5rem">of crisis donations are unhelpful — CIDI / BBB Wise Giving Alliance</p>
+    <h2 class="prob-title">Generosity without guidance<br>creates a second disaster.</h2>
+    <p class="prob-body">When donations flood in after a crisis, most are unsolicited and unusable — expired goods, wrong sizes, irrelevant items. Relief centers become overwhelmed while actual needs go unmet. DirectGiving fixes this.</p>
+  </div>
+  <div class="prob-cards reveal">
+    <div class="prob-card">
+      <div class="ic">👨‍👩‍👧</div>
+      <div><h4>Families</h4><p>Experience prolonged deprivation of essential goods — medicine, baby formula, food — while storage rooms fill with unwanted clutter.</p></div>
+    </div>
+    <div class="prob-card">
+      <div class="ic">🏢</div>
+      <div><h4>NGOs & Social Workers</h4><p>Face burnout managing "clutter donations," incur high storage and disposal costs, and lose precious time sorting unusable items.</p></div>
+    </div>
+    <div class="prob-card">
+      <div class="ic">🤝</div>
+      <div><h4>Donors</h4><p>Feel frustrated and distrustful when gifts don't visibly help anyone — reducing future donations and weakening the giving culture.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ HOW ══════ -->
+<section id="how">
+  <div class="section-head reveal">
+    <div class="tag"><span class="dot"></span>How It Works</div>
+    <h2>Three steps to<br>zero-waste giving.</h2>
+    <p>Our AI-powered registry eliminates the guesswork. Every donation is purposeful, verified, and tracked from pledge to delivery.</p>
+  </div>
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">1</div>
+      <div class="step-icon">📋</div>
+      <h3>NGOs Post Real Needs</h3>
+      <p>Verified social workers and barangay leaders log exactly what their communities need right now — in real time. The wishlist is always live, always accurate.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">2</div>
+      <div class="step-icon">🤖</div>
+      <h3>AI Matches Your Donation</h3>
+      <p>Our smart algorithm pairs what you can give with the highest-priority, nearest community need. The AI Quality Filter screens out unusable items before they're accepted.</p>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">3</div>
+      <div class="step-icon">📍</div>
+      <h3>Track Your Impact</h3>
+      <p>Watch your donation on the Dynamic Distribution Map. Know exactly where it went, who received it, and what difference it made — full transparency, always.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ INTERACTIVE DEMO ══════ -->
+<section id="demo">
+  <div class="section-head reveal">
+    <div class="tag"><span class="dot"></span>Live Platform Demo</div>
+    <h2>See the registry<br>in action.</h2>
+    <p>This is a live preview of the DirectGiving dashboard. Browse real community needs and see how the matching system works.</p>
+  </div>
+  <div class="demo-wrap">
+    <!-- Left -->
+    <div class="demo-left reveal">
+      <h3>Choose your role</h3>
+      <p>The platform works differently for donors and NGOs. Switch between views to see how each stakeholder experiences DirectGiving.</p>
+      <div class="role-tabs">
+        <button class="rtab active" onclick="switchRole('donor',this)">🤝 I'm a Donor</button>
+        <button class="rtab" onclick="switchRole('ngo',this)">🏢 I'm an NGO</button>
+      </div>
+      <div id="donor-flow" class="flow-steps">
+        <div class="fstep active" onclick="setStep(0)">
+          <div class="fstep-num">1</div>
+          <div class="fstep-text"><h4>Browse live needs</h4><p>See exactly what communities need right now, sorted by urgency and location.</p></div>
+        </div>
+        <div class="fstep" onclick="setStep(1)">
+          <div class="fstep-num">2</div>
+          <div class="fstep-text"><h4>Select what to donate</h4><p>Pick items from the verified wishlist — no guessing, no unwanted donations.</p></div>
+        </div>
+        <div class="fstep" onclick="setStep(2)">
+          <div class="fstep-num">3</div>
+          <div class="fstep-text"><h4>View the impact map</h4><p>See donation hubs near you and track where your contribution goes.</p></div>
+        </div>
+      </div>
+      <div id="ngo-flow" class="flow-steps" style="display:none">
+        <div class="fstep active" onclick="setStep(0)">
+          <div class="fstep-num">1</div>
+          <div class="fstep-text"><h4>Post your community needs</h4><p>Add specific, verified items to the live registry — donors see exactly what to bring.</p></div>
+        </div>
+        <div class="fstep" onclick="setStep(1)">
+          <div class="fstep-num">2</div>
+          <div class="fstep-text"><h4>Review incoming donations</h4><p>See matched donations in real time and confirm receipt with one tap.</p></div>
+        </div>
+        <div class="fstep" onclick="setStep(2)">
+          <div class="fstep-num">3</div>
+          <div class="fstep-text"><h4>Generate impact reports</h4><p>Share transparent reports with donors — building trust and future partnerships.</p></div>
+        </div>
+      </div>
+    </div>
+    <!-- Right — dashboard -->
+    <div class="demo-dashboard reveal">
+      <div class="dd-header">
+        <span class="dd-title">💙 DirectGiving Dashboard</span>
+        <div class="dd-tabs">
+          <button class="dd-tab active" onclick="ddTab('needs',this)">Needs</button>
+          <button class="dd-tab" onclick="ddTab('map',this)">Map</button>
+          <button class="dd-tab" onclick="ddTab('donate',this)">Donate</button>
+        </div>
+      </div>
+      <!-- Needs tab -->
+      <div id="tab-needs" class="dd-body">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem">
+          <span style="font-size:.8rem;font-weight:600;color:var(--mid)">📍 Metro Manila · 8 active needs</span>
+          <select style="font-size:.72rem;border:1.5px solid var(--light);border-radius:8px;padding:.3rem .6rem;outline:none" onchange="filterNeeds(this.value)">
+            <option value="all">All priorities</option>
+            <option value="urgent">🔴 Urgent only</option>
+            <option value="medium">🟡 Medium</option>
+          </select>
+        </div>
+        <div id="needs-list"></div>
+        <button class="donate-btn" onclick="switchToDonate()">
+          ✅ Donate Selected Items
+        </button>
+      </div>
+      <!-- Map tab -->
+      <div id="tab-map" class="dd-body" style="display:none">
+        <div class="mini-map" id="mini-map">
+          <div class="map-grid"></div>
+          <!-- pins inserted by JS -->
+        </div>
+        <div class="map-legend">
+          <div class="leg-item"><div class="leg-dot" style="background:#C0282B"></div>Urgent Need</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#E87722"></div>Medium Need</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#22C55E"></div>Fulfilled</div>
+        </div>
+      </div>
+      <!-- Donate tab -->
+      <div id="tab-donate" class="dd-body" style="display:none">
+        <p style="font-size:.82rem;color:var(--mid);margin-bottom:1rem">Select items you can contribute and click Match to find the perfect recipient community.</p>
+        <div id="donate-checklist"></div>
+        <button class="donate-btn" onclick="runMatch()" style="margin-top:1rem">🤖 Run AI Match</button>
+        <div id="demo-match-result" style="display:none;margin-top:1rem;background:var(--green-light);border-radius:12px;padding:1rem;border:1.5px solid #86efac">
+          <p style="font-size:.82rem;color:#166534;font-weight:600">✅ Match found! Your selected items perfectly fulfill needs in <strong id="match-community"></strong>.</p>
+          <p style="font-size:.76rem;color:#166534;margin-top:.4rem">Estimated fulfillment: <strong>Today, within 4 hours</strong></p>
+          <button onclick="openModal('donor')" style="width:100%;background:#16a34a;color:#fff;border:none;border-radius:8px;padding:.6rem;font-weight:700;font-size:.78rem;margin-top:.7rem;cursor:pointer">
+            Confirm Donation →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SIMULATOR ══════ -->
+<section id="simulator">
+  <div class="section-head reveal">
+    <div class="tag"><span class="dot"></span>Impact Simulator</div>
+    <h2>See your donation's<br>real-world impact.</h2>
+    <p>Select items and quantity to simulate a donation match. Watch the AI calculate exactly who you'll help and how much.</p>
+  </div>
+  <div class="sim-wrap">
+    <div class="sim-card reveal">
+      <h3>Build Your Donation</h3>
+      <p class="sim-sub">Choose items and quantities from verified community wishlists.</p>
+      <div class="item-grid" id="item-grid"></div>
+      <div class="sim-row">
+        <label>Quantity</label>
+        <div class="qty-input">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <span class="qty-val" id="qty-display">5</span>
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+      </div>
+      <div class="sim-row">
+        <label>Nearest Hub</label>
+        <select style="flex:1;padding:.55rem .8rem;border:1.5px solid var(--light);border-radius:10px;font-size:.85rem;outline:none" id="hub-select">
+          <option>Tondo Community Center</option>
+          <option>Caloocan Drop-Off Point</option>
+          <option>Pasig Relief Hub</option>
+          <option>QC Barangay Hall 5</option>
+          <option>Cebu City NGO Hub</option>
+        </select>
+      </div>
+      <button class="sim-submit" onclick="runSimulation()">🤖 Simulate My Impact →</button>
+    </div>
+    <div class="result-panel reveal" id="result-panel">
+      <div class="result-idle" id="result-idle">
+        <div class="ri-icon">🎯</div>
+        <p>Choose an item and quantity on the left, then click <strong>Simulate My Impact</strong> to see exactly who you'll help.</p>
+      </div>
+      <div class="result-match" id="result-match" style="display:none">
+        <div class="match-anim">
+          <div class="ma-check">✅</div>
+          <h3>Match Found!</h3>
+          <p id="match-summary">Your donation perfectly fills a need in the community.</p>
+        </div>
+        <div class="match-detail" id="match-detail"></div>
+        <div class="impact-bar-wrap">
+          <div class="impact-bar-label"><span>Need fulfillment</span><strong id="bar-pct">0%</strong></div>
+          <div class="impact-bar-bg"><div class="impact-bar-fill" id="impact-bar"></div></div>
+        </div>
+        <button class="sim-submit" onclick="openModal('donor')" style="margin-top:1.2rem">Donate Now →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ FEATURES ══════ -->
+<section id="features">
+  <div class="section-head reveal">
+    <div class="tag"><span class="dot"></span>Platform Features</div>
+    <h2>Built to make every<br>donation count.</h2>
+    <p>Every feature is designed around one goal: zero-waste, maximum-impact giving.</p>
   </div>
   <div class="feat-grid">
-    <div class="feat-card reveal">
-      <div class="icon">🗺️</div>
+    <div class="feat reveal">
+      <div class="feat-ic">🗺️</div>
       <h3>Dynamic Distribution Map</h3>
-      <p>A live, hyper-local map showing donation hubs, current needs by area, and real-time fulfillment status across your community.</p>
+      <p>A live, hyper-local map showing all donation hubs, current need hotspots by area, and real-time fulfillment status across your region.</p>
     </div>
-    <div class="feat-card reveal">
-      <div class="icon">✅</div>
+    <div class="feat reveal">
+      <div class="feat-ic">🤖</div>
       <h3>AI Quality Filter</h3>
-      <p>Our AI-Powered Quality Filter screens donations before they're accepted — preventing the "Second Disaster" of unusable or expired goods reaching relief centers.</p>
+      <p>Our AI screens every incoming donation before acceptance — preventing expired, damaged, or irrelevant goods from reaching relief centers and creating a "second disaster."</p>
     </div>
-    <div class="feat-card reveal">
-      <div class="icon">📱</div>
-      <h3>Live Wishlist by Social Workers</h3>
-      <p>Verified community leaders manage a real-time registry of exactly what's needed. Donors only see what's genuinely asked for — a "Pull" not "Push" model.</p>
+    <div class="feat reveal">
+      <div class="feat-ic">📋</div>
+      <h3>Verified Live Wishlist</h3>
+      <p>Only verified social workers and barangay leaders can post needs. A "Pull" logistics model means donors only give what's actually asked for — no guesswork.</p>
     </div>
-    <div class="feat-card reveal">
-      <div class="icon">🔒</div>
-      <h3>Verified Recipient Network</h3>
-      <p>Every NGO and community partner is verified through municipal social welfare agencies. Your trust is protected by institutional accountability.</p>
+    <div class="feat reveal">
+      <div class="feat-ic">🔒</div>
+      <h3>Institutional Verification</h3>
+      <p>Every NGO and community partner is authenticated through municipal social welfare agencies. Your trust is backed by government accountability.</p>
     </div>
-  </div>
-</section>
-
-<!-- IMPACT NUMBERS -->
-<section class="impact" id="impact">
-  <div class="reveal" style="text-align:center;">
-    <p class="section-label">Our Vision</p>
-    <h2 class="section-title">Changing how the<br>Philippines gives.</h2>
-  </div>
-  <div class="impact-grid">
-    <div class="impact-card reveal">
-      <span class="num">₱1.2T</span>
-      <span class="label">Total Philippine charity<br>market we address</span>
+    <div class="feat reveal">
+      <div class="feat-ic">📊</div>
+      <h3>Real-Time Impact Reports</h3>
+      <p>Donors receive transparent reports showing exactly who received their gifts. NGOs can share these reports to strengthen donor relationships and secure future support.</p>
     </div>
-    <div class="impact-card reveal">
-      <span class="num">₱120B</span>
-      <span class="label">Urban digital donation<br>market we serve</span>
-    </div>
-    <div class="impact-card reveal">
-      <span class="num">0%</span>
-      <span class="label">Target donation<br>waste rate</span>
-    </div>
-    <div class="impact-card reveal">
-      <span class="num">Real-time</span>
-      <span class="label">Live needs registry<br>always updated</span>
+    <div class="feat reveal">
+      <div class="feat-ic">📱</div>
+      <h3>Mobile-First Design</h3>
+      <p>Built with React Native for iOS and Android, plus a full web dashboard. Donate, track, and manage from any device, anywhere — even in low-connectivity areas.</p>
     </div>
   </div>
 </section>
 
-<!-- WHO IT'S FOR -->
-<section class="who" id="who">
-  <div class="reveal">
-    <p class="section-label">Who It's For</p>
-    <h2 class="section-title">One platform.<br>Every stakeholder.</h2>
+<!-- ══════ WHO ══════ -->
+<section id="who">
+  <div class="section-head reveal">
+    <div class="tag"><span class="dot"></span>Who It's For</div>
+    <h2>One platform.<br>Every stakeholder.</h2>
+    <p>DirectGiving serves every link in the donation chain — from the person with a box of goods to the family waiting for medicine.</p>
   </div>
   <div class="who-grid">
     <div class="who-card reveal">
-      <div class="avatar">🤝</div>
+      <div class="who-avatar">🤝</div>
       <h3>Donors & Urban Residents</h3>
-      <p>Give with absolute confidence. Know your donation — whether baby formula, medicine, or rice — reached exactly the family that needed it, verified and tracked.</p>
+      <p>Give with absolute confidence. Know your donation reached exactly the right person, verified and tracked from pledge to delivery.</p>
+      <ul>
+        <li>Browse real-time community wishlists</li>
+        <li>AI-matched to the nearest, highest-priority need</li>
+        <li>Receive a digital impact certificate</li>
+        <li>Track donations on the live map</li>
+      </ul>
     </div>
     <div class="who-card reveal">
-      <div class="avatar">🏥</div>
+      <div class="who-avatar">🏥</div>
       <h3>NGOs & Non-Profits</h3>
-      <p>Stop managing clutter. Post your exact needs, receive only what you asked for, and eliminate the logistical nightmare of unsolicited and unusable donations.</p>
+      <p>Stop managing clutter. Post exact needs, receive only what you asked for, and eliminate the logistical nightmare of unsolicited goods.</p>
+      <ul>
+        <li>Post and update live needs in seconds</li>
+        <li>Receive pre-screened, verified donations</li>
+        <li>Reduce storage and disposal costs to zero</li>
+        <li>Generate donor trust reports automatically</li>
+      </ul>
     </div>
     <div class="who-card reveal">
-      <div class="avatar">👩‍💼</div>
+      <div class="who-avatar">👩‍💼</div>
       <h3>Social Workers & Barangay Leaders</h3>
-      <p>Manage your community's wishlist in real time. Reduce burnout from sorting donations and focus your energy on the families who need care most.</p>
+      <p>Reduce burnout and manage your community's needs with precision. Focus on the people who need care, not on sorting donations.</p>
+      <ul>
+        <li>Manage a live community wishlist</li>
+        <li>Coordinate incoming donations via dashboard</li>
+        <li>Update need status in real time</li>
+        <li>Flag urgent or time-sensitive items</li>
+      </ul>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
-<section class="cta-section" id="cta">
+<!-- ══════ IMPACT ══════ -->
+<section id="impact">
+  <div class="reveal">
+    <h2>Changing how the<br>Philippines gives.</h2>
+    <p>Our market analysis shows an enormous opportunity to transform charitable giving through technology and accountability.</p>
+  </div>
+  <div class="impact-row reveal">
+    <div>
+      <span class="imp-num">₱1.2T</span>
+      <span class="imp-label">Total Philippine<br>charity market (TAM)</span>
+    </div>
+    <div>
+      <span class="imp-num">₱120B</span>
+      <span class="imp-label">Urban digital donation<br>market we serve (SAM)</span>
+    </div>
+    <div>
+      <span class="imp-num">₱20M</span>
+      <span class="imp-label">Platform donations<br>target in Year 2 (SOM)</span>
+    </div>
+    <div>
+      <span class="imp-num">0%</span>
+      <span class="imp-label">Target donation<br>waste rate</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ CTA ══════ -->
+<section id="cta">
   <h2>Ready to make every<br>donation count?</h2>
   <p>Join DirectGiving and be part of the movement transforming charity from a guessing game into a precise, data-driven act of kindness.</p>
   <div class="cta-btns">
-    <a href="#" class="btn-white"> I Want to Donate</a>
-    <a href="#" class="btn-ghost"> Register as an NGO</a>
+    <button class="btn-white" onclick="openModal('donor')">🤝 I Want to Donate</button>
+    <button class="btn-outline-w" onclick="openModal('ngo')">🏢 Register as an NGO</button>
   </div>
 </section>
 
-<!-- FOOTER -->
+<!-- ══════ FOOTER ══════ -->
 <footer>
-  <div class="footer-logo">DirectGiving</div>
-  <div class="footer-links">
-    <a href="#">About</a>
-    <a href="#">Privacy</a>
-    <a href="#">Contact</a>
-    <a href="#">Partner with Us</a>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h4>DirectGiving</h4>
+      <p>An AI-driven registry that matches real-time community needs with verified local donations. No waste. No guesswork. Real impact.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Platform</h5>
+      <a href="#how">How It Works</a>
+      <a href="#demo">Live Demo</a>
+      <a href="#features">Features</a>
+      <a href="#simulator">Impact Simulator</a>
+    </div>
+    <div class="footer-col">
+      <h5>For</h5>
+      <a href="#" onclick="openModal('donor')">Donors</a>
+      <a href="#" onclick="openModal('ngo')">NGOs & Non-Profits</a>
+      <a href="#" onclick="openModal('ngo')">Social Workers</a>
+      <a href="#" onclick="openModal('ngo')">Barangay Leaders</a>
+    </div>
+    <div class="footer-col">
+      <h5>Company</h5>
+      <a href="#">About the Team</a>
+      <a href="#">Contact Us</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Use</a>
+    </div>
   </div>
-  <div class="footer-copy">© 2026 DirectGiving. All rights reserved.</div>
+  <div class="footer-bottom">
+    <span>© 2026 DirectGiving. All rights reserved.</span>
+    <span>Alemania · Barundia · Cabral · Oriola &nbsp;|&nbsp; Wadhwani Foundation</span>
+  </div>
 </footer>
 
+<!-- ══════ MODAL ══════ -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h3 id="modal-title">Join DirectGiving</h3>
+      <p id="modal-sub">Create your account and start making a real difference.</p>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="role-choice" id="role-choice">
+        <div class="role-opt selected" id="opt-donor" onclick="selectRole('donor')">
+          
+          <div class="ro-label">I'm a Donor</div>
+        </div>
+        <div class="role-opt" id="opt-ngo" onclick="selectRole('ngo')">
+          
+          <div class="ro-label">NGO / Social Worker</div>
+        </div>
+      </div>
+      <div id="modal-form">
+        <div class="form-group two">
+          <div><label>First Name</label><input type="text" placeholder="Juan" id="f-fname"></div>
+          <div><label>Last Name</label><input type="text" placeholder="Dela Cruz" id="f-lname"></div>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="juan@email.com" id="f-email">
+        </div>
+        <div class="form-group" id="org-field" style="display:none">
+          <label>Organization Name</label>
+          <input type="text" placeholder="Your NGO or Barangay" id="f-org">
+        </div>
+        <div class="form-group">
+          <label>City / Area</label>
+          <select id="f-city">
+            <option>Metro Manila</option>
+            <option>Cebu City</option>
+            <option>Davao City</option>
+            <option>Calamba, Laguna</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <button class="form-submit" onclick="submitForm()">Create My Account →</button>
+      </div>
+      <div class="form-success" id="form-success">
+        <div class="fs-ic">🎉</div>
+        <h4>Welcome to DirectGiving!</h4>
+        <p id="success-msg">Your account has been created. You'll receive a confirmation email shortly with your next steps.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"><span class="t-dot"></span><span id="toast-msg">Matched!</span></div>
+
+<!-- SCROLL TOP -->
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">↑</button>
+
 <script>
-  // Scroll reveal
-  const reveals = document.querySelectorAll('.reveal');
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((e, i) => {
-      if (e.isIntersecting) {
-        setTimeout(() => e.target.classList.add('visible'), i * 80);
-        io.unobserve(e.target);
-      }
+// ══════════════════════════════════════
+// DATA
+// ══════════════════════════════════════
+const NEEDS = [
+  {icon:'🍼',name:'Baby Formula',community:'Tondo, Manila',priority:'urgent',needed:15,received:4,unit:'cans'},
+  {icon:'💊',name:'Medical Supplies',community:'Caloocan City',priority:'urgent',needed:30,received:8,unit:'kits'},
+  {icon:'🍚',name:'Rice & Food Packs',community:'Pasig City',priority:'medium',needed:25,received:12,unit:'packs'},
+  {icon:'🧴',name:'Hygiene Kits',community:'Quezon City',priority:'medium',needed:20,received:9,unit:'sets'},
+  {icon:'🧸',name:"Children's Clothing",community:'Marikina City',priority:'low',needed:50,received:22,unit:'pieces'},
+  {icon:'💉',name:'Insulin Supplies',community:'Makati City',priority:'urgent',needed:10,received:1,unit:'boxes'},
+];
+const ITEMS = [
+  {icon:'🍼',name:'Baby Formula',unit:'cans',matchIdx:0},
+  {icon:'💊',name:'Medical Kits',unit:'kits',matchIdx:1},
+  {icon:'🍚',name:'Rice Packs',unit:'packs',matchIdx:2},
+  {icon:'🧴',name:'Hygiene Kits',unit:'sets',matchIdx:3},
+  {icon:'🧸',name:'Clothing',unit:'pieces',matchIdx:4},
+  {icon:'💉',name:'Insulin',unit:'boxes',matchIdx:5},
+];
+const MAP_PINS = [
+  {top:'20%',left:'25%',label:'Tondo Hub',color:'#C0282B',urgent:true},
+  {top:'45%',left:'55%',label:'Pasig Hub',color:'#E87722',urgent:false},
+  {top:'60%',left:'20%',label:'Caloocan',color:'#C0282B',urgent:true},
+  {top:'30%',left:'70%',label:'Marikina',color:'#22C55E',urgent:false},
+  {top:'70%',left:'65%',label:'Makati Hub',color:'#C0282B',urgent:true},
+];
+
+// ══════════════════════════════════════
+// NAV
+// ══════════════════════════════════════
+window.addEventListener('scroll',()=>{
+  const nav=document.getElementById('nav');
+  nav.classList.toggle('scrolled',window.scrollY>20);
+  document.getElementById('scroll-top').classList.toggle('visible',window.scrollY>400);
+  // active link
+  const secs=['hero','how','demo','simulator','features','who','impact'];
+  let cur='';
+  secs.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&window.scrollY>=el.offsetTop-120)cur=id;
+  });
+  document.querySelectorAll('.nav-links a').forEach(a=>{
+    a.classList.toggle('active',a.getAttribute('href')==='#'+cur);
+  });
+});
+
+const hamburger=document.getElementById('hamburger');
+const mobileMenu=document.getElementById('mobile-menu');
+hamburger.addEventListener('click',()=>{
+  const open=mobileMenu.style.display==='flex';
+  mobileMenu.style.display=open?'none':'flex';
+  const spans=hamburger.querySelectorAll('span');
+  if(!open){spans[0].style.transform='rotate(45deg) translate(5px,5px)';spans[1].style.opacity='0';spans[2].style.transform='rotate(-45deg) translate(5px,-5px)'}
+  else{spans[0].style.transform='';spans[1].style.opacity='';spans[2].style.transform=''}
+});
+function closeMobile(){
+  mobileMenu.style.display='none';
+  const spans=hamburger.querySelectorAll('span');
+  spans[0].style.transform='';spans[1].style.opacity='';spans[2].style.transform='';
+}
+
+// ══════════════════════════════════════
+// SCROLL REVEAL
+// ══════════════════════════════════════
+const revealObs=new IntersectionObserver((entries)=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){setTimeout(()=>e.target.classList.add('in'),i*80);revealObs.unobserve(e.target)}
+  });
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
+
+// ══════════════════════════════════════
+// DEMO DASHBOARD
+// ══════════════════════════════════════
+let currentRole='donor';
+function switchRole(role,btn){
+  currentRole=role;
+  document.querySelectorAll('.rtab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('donor-flow').style.display=role==='donor'?'flex':'none';
+  document.getElementById('ngo-flow').style.display=role==='ngo'?'flex':'none';
+}
+function setStep(i){
+  const flow=document.getElementById(currentRole+'-flow');
+  flow.querySelectorAll('.fstep').forEach((s,idx)=>s.classList.toggle('active',idx===i));
+  if(i===2)ddTab('map',document.querySelectorAll('.dd-tab')[1]);
+  else if(i===1)ddTab('donate',document.querySelectorAll('.dd-tab')[2]);
+  else ddTab('needs',document.querySelectorAll('.dd-tab')[0]);
+}
+
+function renderNeeds(filter='all'){
+  const list=document.getElementById('needs-list');
+  list.innerHTML='';
+  NEEDS.filter(n=>filter==='all'||(filter==='urgent'&&n.priority==='urgent')||(filter==='medium'&&n.priority==='medium'))
+    .forEach(n=>{
+      const pct=Math.round((n.received/n.needed)*100);
+      const div=document.createElement('div');
+      div.className='need-item';
+      div.innerHTML=`
+        ${n.priority==='urgent'?'<span class="need-urgent">Urgent</span>':''}
+        <div class="need-icon">${n.icon}</div>
+        <div class="need-info">
+          <h4>${n.name}</h4>
+          <span class="need-meta">📍 ${n.community} · Needed: ${n.needed} ${n.unit} · Got: ${n.received}</span>
+        </div>
+        <div class="need-bar-wrap">
+          <div class="need-bar-bg"><div class="need-bar-fill" style="width:${pct}%"></div></div>
+          <div class="need-pct">${pct}% met</div>
+        </div>`;
+      list.appendChild(div);
     });
-  }, { threshold: 0.1 });
-  reveals.forEach(el => io.observe(el));
+}
+function filterNeeds(val){renderNeeds(val)}
+
+function renderDonateChecklist(){
+  const el=document.getElementById('donate-checklist');
+  el.innerHTML='';
+  NEEDS.slice(0,5).forEach((n,i)=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:.7rem;padding:.6rem;border-radius:8px;cursor:pointer;margin-bottom:.3rem;transition:background .2s';
+    row.onmouseenter=()=>row.style.background='var(--light)';
+    row.onmouseleave=()=>{if(!row.querySelector('input').checked)row.style.background='transparent'}
+    const chk=document.createElement('input');
+    chk.type='checkbox';chk.id='dc'+i;chk.style.accentColor='#C0282B';chk.style.width='16px';chk.style.height='16px';
+    chk.onchange=()=>{document.getElementById('demo-match-result').style.display='none'};
+    const lbl=document.createElement('label');
+    lbl.htmlFor='dc'+i;lbl.style.cssText='font-size:.84rem;cursor:pointer;display:flex;align-items:center;gap:.5rem;';
+    lbl.innerHTML=`${n.icon} <strong>${n.name}</strong> <span style="color:var(--mid);font-size:.76rem">— needs ${n.needed-n.received} more ${n.unit}</span>`;
+    row.appendChild(chk);row.appendChild(lbl);el.appendChild(row);
+  });
+}
+
+function runMatch(){
+  const checked=[...document.querySelectorAll('#donate-checklist input:checked')];
+  if(!checked.length){showToast('⚠️ Please select at least one item');return}
+  const idx=parseInt(checked[0].id.replace('dc',''));
+  const n=NEEDS[idx];
+  const mr=document.getElementById('demo-match-result');
+  document.getElementById('match-community').textContent=n.community;
+  mr.style.display='block';
+  showToast('✅ AI match found in '+n.community+'!');
+}
+
+function ddTab(tab,btn){
+  ['needs','map','donate'].forEach(t=>document.getElementById('tab-'+t).style.display='none');
+  document.getElementById('tab-'+tab).style.display='block';
+  document.querySelectorAll('.dd-tab').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  if(tab==='map')renderMap();
+}
+
+function switchToDonate(){
+  var tabs=document.querySelectorAll('.dd-tab');
+  ddTab('donate', tabs[2]);
+}
+
+function renderMap(){
+  const map=document.getElementById('mini-map');
+  map.querySelectorAll('.map-pin').forEach(p=>p.remove());
+  MAP_PINS.forEach(p=>{
+    const pin=document.createElement('div');
+    pin.className='map-pin';pin.style.top=p.top;pin.style.left=p.left;pin.style.position='absolute';
+    pin.innerHTML=`<div class="pin-dot" style="background:${p.color}"></div><div class="pin-label">${p.label}</div>`;
+    pin.title=p.label;
+    pin.onclick=()=>showToast('📍 '+p.label+(p.urgent?' — Urgent need!':' — Accepting donations'));
+    map.appendChild(pin);
+  });
+}
+
+// ══════════════════════════════════════
+// SIMULATOR
+// ══════════════════════════════════════
+let selectedItem=0,qty=5;
+function renderItemGrid(){
+  const grid=document.getElementById('item-grid');
+  grid.innerHTML='';
+  ITEMS.forEach((item,i)=>{
+    const tile=document.createElement('div');
+    tile.className='item-tile'+(i===0?' selected':'');
+    tile.innerHTML=`<div class="it-icon">${item.icon}</div><div class="it-name">${item.name}</div><div class="it-need">${NEEDS[item.matchIdx].needed-NEEDS[item.matchIdx].received} needed</div>`;
+    tile.onclick=()=>{
+      document.querySelectorAll('.item-tile').forEach(t=>t.classList.remove('selected'));
+      tile.classList.add('selected');selectedItem=i;
+      document.getElementById('demo-match-result').style.display='none';
+      document.getElementById('result-idle').style.display='block';
+      document.getElementById('result-match').style.display='none';
+    };
+    grid.appendChild(tile);
+  });
+}
+function changeQty(d){
+  qty=Math.max(1,Math.min(100,qty+d));
+  document.getElementById('qty-display').textContent=qty;
+}
+function runSimulation(){
+  const item=ITEMS[selectedItem];
+  const need=NEEDS[item.matchIdx];
+  const fulfilled=Math.min(qty,need.needed-need.received);
+  const pct=Math.round((fulfilled/(need.needed-need.received))*100);
+  const hub=document.getElementById('hub-select').value;
+  document.getElementById('result-idle').style.display='none';
+  const rm=document.getElementById('result-match');
+  rm.style.display='block';
+  document.getElementById('match-summary').textContent=`Your ${qty} ${item.unit} of ${item.name} will help families in ${need.community}.`;
+  document.getElementById('match-detail').innerHTML=`
+    <div class="md-row"><span>Item Donated</span><strong>${item.icon} ${item.name}</strong></div>
+    <div class="md-row"><span>Quantity</span><strong>${qty} ${item.unit}</strong></div>
+    <div class="md-row"><span>Matched Community</span><strong>📍 ${need.community}</strong></div>
+    <div class="md-row"><span>Drop-Off Hub</span><strong>${hub}</strong></div>
+    <div class="md-row"><span>Need Fulfilled</span><strong>${fulfilled} / ${need.needed-need.received} ${item.unit}</strong></div>
+    <div class="md-row"><span>Estimated Families Helped</span><strong>~${Math.ceil(fulfilled/2)} families</strong></div>`;
+  const bar=document.getElementById('impact-bar');
+  const pctEl=document.getElementById('bar-pct');
+  bar.style.width='0%';pctEl.textContent='0%';
+  setTimeout(()=>{bar.style.width=pct+'%';pctEl.textContent=pct+'%'},100);
+  showToast('🎯 Match found! '+fulfilled+' '+item.unit+' going to '+need.community);
+}
+
+// ══════════════════════════════════════
+// MODAL
+// ══════════════════════════════════════
+let modalRole='donor';
+function openModal(role){
+  modalRole=role||'donor';
+  selectRole(modalRole);
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('modal-form').style.display='block';
+  document.getElementById('form-success').style.display='none';
+  document.body.style.overflow='hidden';
+}
+function closeModal(e){
+  if(e && e.target && e.target!==document.getElementById('modal'))return;
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+function selectRole(role){
+  modalRole=role;
+  document.getElementById('opt-donor').classList.toggle('selected',role==='donor');
+  document.getElementById('opt-ngo').classList.toggle('selected',role==='ngo');
+  document.getElementById('org-field').style.display=role==='ngo'?'block':'none';
+  document.getElementById('modal-title').textContent=role==='donor'?'Join as a Donor':'Register Your Organization';
+  document.getElementById('modal-sub').textContent=role==='donor'?'Start donating smart — zero waste, real impact.':'Get your NGO on the verified DirectGiving registry.';
+}
+function submitForm(){
+  const fname=document.getElementById('f-fname').value.trim();
+  const email=document.getElementById('f-email').value.trim();
+  if(!fname||!email){showToast('⚠️ Please fill in your name and email');return}
+  document.getElementById('modal-form').style.display='none';
+  document.getElementById('form-success').style.display='block';
+  const msg=modalRole==='donor'
+    ?`Welcome, ${fname}! Your donor account is ready. Browse live community needs and make your first matched donation.`
+    :`Thank you, ${fname}! Your organization is under review. We'll verify your details within 24 hours and grant you dashboard access.`;
+  document.getElementById('success-msg').textContent=msg;
+  showToast('🎉 Account created! Welcome, '+fname+'!');
+}
+
+// ══════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════
+let toastTimeout;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+renderNeeds();
+renderDonateChecklist();
+renderItemGrid();
 </script>
 </body>
 </html>
